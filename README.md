@@ -1,9 +1,9 @@
 # mHealth Prototyp (Patient view)
 Prototype app for demonstrating mHealth use cases on EPD Playground with patient centered examples using the [CH AllergyIntolerance profile](http://fhir.ch/ig/ch-allergyintolerance/index.html).
 
-Try out the latest version of this webapp: TODO: Link (use `matteo@mail.li` with passwort `test` for mock login or use one of the test users from [chapter 1.1](#1.1-example-users)).
+Try out the latest version of this webapp: https://mhealth-prototyp.github.io/Allergy/ (use `matteo@mail.li` with passwort `test` for mock login or use one of the test users from [chapter 1.1](#1.1-example-users)).
 
-You might also be interested in the [health-professional oriented prototype app](https://gitlab.ti.bfh.ch/epd-uc/epd-use-case-prototypen).
+You might also be interested in the [health-professional oriented prototype app](https://github.com/mHealth-Prototyp/Basic-Prototyp).
 
 ## Content Table
 - [1 About this prototype webapp](#1-about-this-prototype-webapp)
@@ -103,7 +103,7 @@ npm run build
 ```
 
 ## 4 Submit issues
-Go to the issue site of the repository. [github.com](https://github.com/mHealth-Prototyp/Allergy/issues)
+Go to the issue site of the repository to submit an issue: [on github.com](https://github.com/mHealth-Prototyp/Allergy/issues)
 
 ## 5 Changelog
 
