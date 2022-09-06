@@ -181,8 +181,7 @@ export default defineComponent({
       data.push(header);
 
       let entries = this.filterByAllergies(this.diary);
-      let date = entries.at(-1)?.date;
-      this.buildHAxis(date);
+      this.buildHAxis();
 
       // Adds the entries to data.
       for (const e of entries) {
@@ -261,8 +260,8 @@ export default defineComponent({
       }
       return diaryEntries;
     },
-    buildHAxis(date: Date = new Date()) {
-      date = Utils.dateTimeToDate(date);
+    buildHAxis() {
+      const date = Utils.dateTimeToDate(new Date());
       this.chartOptions.hAxis.ticks.length = 0;
 
       if (this.dayOffset === -1) {
@@ -295,10 +294,14 @@ export default defineComponent({
         let currentMonth = date.getMonth();
         let currentYear = date.getFullYear();
         this.chartOptions.hAxis.ticks.length = 0;
-        for (let i = currentMonth - 11; i <= currentMonth; i++) {
+        for (let i = currentMonth - 11; i <= currentMonth + 1; i++) {
           if (i < 0) {
             this.chartOptions.hAxis.ticks.push(
               new Date(currentYear - 1, months[i])
+            );
+          } else if (i === 0) {
+            this.chartOptions.hAxis.ticks.push(
+              new Date(currentYear, months[i], 3)
             );
           } else {
             this.chartOptions.hAxis.ticks.push(
