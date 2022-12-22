@@ -2,32 +2,49 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat
-               dense
-               round
-               icon="fas fa-bars"
-               :aria-label="$t('layout.title')"
-               @click="toggleLeftDrawer"
-        />
+        <q-btn
+          flat
+          dense
+          round
+          icon="fas fa-bars"
+          :aria-label="$t('layout.title')"
+          @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
           {{ $t('layout.title') }}
           <span class="sub-title">{{ $t('layout.subtitle') }}</span>
         </q-toolbar-title>
 
-        <div v-if="user.givenName" @click="logout">
-          {{ (user.prefix ? user.prefix : '') + ' ' + user.givenName + ' ' + user.familyName}}
-          <q-icon name="fas fa-user" id="user-icon"/>
+        <div class="q-mr-lg">
+          {{ $today.toLocaleDateString() }}
+        </div>
+
+        <div
+          v-if="user.givenName"
+          @click="logout">
+          {{ (user.prefix ? user.prefix : '') + ' ' + user.givenName + ' ' + user.familyName }}
+          <q-icon
+            name="fas fa-user"
+            id="user-icon" />
         </div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered>
+    <q-drawer
+      v-model="leftDrawerOpen"
+      bordered>
       <q-list>
-        <q-item-label header>{{$t('layout.menu.title')}}</q-item-label>
-        <q-item v-for="entry in menuEntries" :key="entry.to">
-          <q-icon v-if="entry.icon" :name="'fas fa-' + entry.icon" class="menu-icon"/>
-          <router-link :to="entry.to" class="menu-link">
+        <q-item-label header>{{ $t('layout.menu.title') }}</q-item-label>
+        <q-item
+          v-for="entry in menuEntries"
+          :key="entry.to">
+          <q-icon
+            v-if="entry.icon"
+            :name="'fas fa-' + entry.icon"
+            class="menu-icon" />
+          <router-link
+            :to="entry.to"
+            class="menu-link">
             {{ $t('layout.menu.' + entry.translateString) }}
           </router-link>
         </q-item>
@@ -41,8 +58,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { LoginType } from 'src/model/interfaces';
+import {defineComponent} from 'vue';
+import {LoginType} from 'src/model/interfaces';
+import {getLangStringFromLocale} from 'src/boot/i18n';
 
 interface MenuEntry {
   to: string;
@@ -68,7 +86,7 @@ export default defineComponent({
           translateString: 'documents',
           icon: 'book-medical'
         },
-         {
+        {
           to: '/upload',
           translateString: 'upload',
           icon: 'file-upload'
@@ -89,11 +107,22 @@ export default defineComponent({
           icon: 'question-circle'
         }
       ] as MenuEntry[]
-
-    }
+    };
+  },
+  beforeCreate() {
+    this.$i18n.locale = this.$store.getLanguage();
+    import(
+      /* webpackInclude: /(de|fr)\.js$/ */
+      'quasar/lang/' + getLangStringFromLocale(this.$store.getLanguage())
+    )
+      .then((lang) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+        this.$q.lang.set(lang.default);
+      })
+      .catch((error) => console.error(error));
   },
   mounted() {
-    this.user = this.$store.getUser() || {} as LoginType;
+    this.user = this.$store.getUser() || ({} as LoginType);
   },
   methods: {
     toggleLeftDrawer() {
@@ -104,7 +133,6 @@ export default defineComponent({
         this.$store.logoutUser();
         location.reload();
       }
-
     }
   }
 });
@@ -160,8 +188,8 @@ export default defineComponent({
 }
 
 @media (max-width: 500px) {
-.sub-title {
-  display: none
-}
+  .sub-title {
+    display: none;
+  }
 }
 </style>

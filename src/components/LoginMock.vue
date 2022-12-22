@@ -1,7 +1,9 @@
 <template>
   <q-card class="login-card">
-    <q-card-section class="card-title">  {{ $t('login.login_label') }} </q-card-section>
-    <template v-if="code === ''" >
+    <q-card-section class="card-title">
+      {{ $t('login.login_label') }}
+    </q-card-section>
+    <template v-if="code === ''">
       <q-card-section class="login-text">
         <p>
           {{ $t('login.welcome1') }}
@@ -10,36 +12,57 @@
           {{ $t('login.welcome2') }}
         </p>
         <form id="login-form">
-          <q-input v-model="eId" :label="$t('login.eid_label')" type="email" />
-          <q-input v-model="password" :label="$t('login.password_label')" type="password" />
-          <q-btn id="login-button"
-                 @click="login"
-                 type="submit"
-                 :loading="processing"
-                 :label="$t('login.login_label')"
-                 :disable="processing || password === '' || eId === ''"/>
+          <q-input
+            v-model="eId"
+            :label="$t('login.eid_label')"
+            type="email" />
+          <q-input
+            v-model="password"
+            :label="$t('login.password_label')"
+            type="password" />
+          <q-btn
+            id="login-button"
+            @click="login"
+            type="submit"
+            :loading="processing"
+            :label="$t('login.login_label')"
+            :disable="processing || password === '' || eId === ''" />
         </form>
-        <p v-if="invalidPassword" class="warning">
+        <p
+          v-if="invalidPassword"
+          class="warning">
           {{ $t('login.invalid_password') }}
         </p>
       </q-card-section>
     </template>
     <q-card-section v-else>
       <p>
-         {{ $t('login.enter_code1') }}<span class="phonenumber">{{ obscurePhoneNumber(user.phone) }}</span>{{ $t('login.enter_code2') }}
+        {{ $t('login.enter_code1') }}<span class="phonenumber">{{ obscurePhoneNumber(user.phone) }}</span
+        >{{ $t('login.enter_code2') }}
       </p>
-      <span @click="generateAndSendCode(user.phone)" href="#" class="resend-link">{{ $t('login.resend') }}</span>
+      <span
+        @click="generateAndSendCode(user.phone)"
+        href="#"
+        class="resend-link"
+        >{{ $t('login.resend') }}</span
+      >
       <form id="code-form">
-        <q-input v-model="codeInput" label="Code" type="tel" autofocus/>
-        <q-btn id="code-button"
-               @click="checkCode"
-               :label="$t('login.check_label')"
-               type="submit"
-               :loading="processing"
-               :disable="processing || codeInput === ''"
-        />
+        <q-input
+          v-model="codeInput"
+          label="Code"
+          type="tel"
+          autofocus />
+        <q-btn
+          id="code-button"
+          @click="checkCode"
+          :label="$t('login.check_label')"
+          type="submit"
+          :loading="processing"
+          :disable="processing || codeInput === ''" />
       </form>
-      <p v-if="invalidCode" class="warning">
+      <p
+        v-if="invalidCode"
+        class="warning">
         {{ $t('login.invalid_code') }}
       </p>
     </q-card-section>
@@ -47,8 +70,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { LoginType, UIMessage, UIMessageType } from '../model/interfaces';
+import {defineComponent, PropType} from 'vue';
+import {LoginType, UIMessage, UIMessageType} from '../model/interfaces';
 
 function generateCode(length: number): string {
   let code = Math.floor(Math.random() * Math.pow(10, length)).toString();
@@ -78,7 +101,7 @@ export default defineComponent({
       } as LoginType,
       invalidPassword: false,
       invalidCode: false
-    }
+    };
   },
   /**
    *
@@ -89,7 +112,7 @@ export default defineComponent({
      * Emitted when mocked message for 2FA is "sent".
      */
     message: (payload: UIMessage) => {
-      return payload.type === 'sms' && payload.title && payload.text
+      return payload.type === 'sms' && payload.title && payload.text;
     }
   },
   props: {
@@ -107,10 +130,17 @@ export default defineComponent({
       type: Function as PropType<(user: LoginType) => void>,
       required: false
     },
-     /**
+    /**
      * Displays a processing spinner in the buttons
      */
     processing: {
+      type: Boolean,
+      required: false
+    },
+    /**
+     * Disables the simulated 2FA
+     */
+    disable2FA: {
       type: Boolean,
       required: false
     }
@@ -118,10 +148,12 @@ export default defineComponent({
   methods: {
     login(e: Event) {
       e.preventDefault();
-      const login = this.$props.acceptedLogins.find(login => login.username === this.eId);
+      const login = this.$props.acceptedLogins.find((login) => login.username === this.eId);
       if (login && login.password === this.password) {
         this.user = login;
-        this.generateAndSendCode(login.phone);
+        this.$props.disable2FA
+          ? this.$props.onLogin && this.$props.onLogin(this.user)
+          : this.generateAndSendCode(login.phone);
       } else {
         this.invalidPassword = true;
       }
@@ -145,7 +177,7 @@ export default defineComponent({
       });
     },
     obscurePhoneNumber(number: string): string {
-      return number.substring(0,2) + '• ••• ' + number.substring(number.length - 5, number.length);;
+      return number.substring(0, 2) + '• ••• ' + number.substring(number.length - 5, number.length);
     }
   },
   watch: {
@@ -170,7 +202,8 @@ export default defineComponent({
   margin-left: auto;
   margin-top: 10vh;
 }
-#login-form, #code-form {
+#login-form,
+#code-form {
   width: 80%;
   margin-left: auto;
   margin-right: auto;
@@ -180,7 +213,8 @@ export default defineComponent({
   width: 5em;
   font-size: 2em;
 }
-#login-button, #code-button {
+#login-button,
+#code-button {
   margin: 2em auto 0.5em;
   display: block;
   width: 50%;

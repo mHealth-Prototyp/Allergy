@@ -1,109 +1,138 @@
 <template>
   <q-card class="calendar-card dashboard-card">
     <q-card-section class="card-title">
-       <q-icon name="fas fa-calendar" class="big-icon"/>
+      <q-icon
+        name="fas fa-calendar"
+        class="big-icon" />
       {{ $t('calendar.title') }}
     </q-card-section>
     <q-card-section class="row justify-around">
       <!-- YEARS -->
-      <div v-for="year in years"
-           :key="year.year"
-           :class="'row justify-evenly year-tile' + (year.expanded ? ' expanded' : '')">
-        <div class="date" @click="toggleExpanded(year, !year.expanded)">
+      <div
+        v-for="year in years"
+        :key="year.year"
+        :class="'row justify-evenly year-tile' + (year.expanded ? ' expanded' : '')">
+        <div
+          class="date"
+          @click="toggleExpanded(year, !year.expanded)">
           <h1>
             {{ year.year }}
           </h1>
-          <hr width="100%"/>
+          <hr width="100%" />
           <p v-if="!year.expanded">
-            {{ year.numberOfEntries + ' ' + (year.numberOfEntries === 1 ? $t('calendar.entryLabel') : $t('calendar.entriesLabel'))}}
+            {{
+              year.numberOfEntries +
+              ' ' +
+              (year.numberOfEntries === 1 ? $t('calendar.entryLabel') : $t('calendar.entriesLabel'))
+            }}
           </p>
         </div>
-        <div v-if="year.expanded" class="row justify-around full-width">
-
+        <div
+          v-if="year.expanded"
+          class="row justify-around full-width">
           <!-- MONTHS -->
-          <div v-for="month in year.months"
-               :key="year.year + '/' + month.month"
-               :class="'month-tile' + (month.expanded ? ' expanded' : '')">
-            <div class="date" @click="toggleExpanded(month, !month.expanded)">
+          <div
+            v-for="month in year.months"
+            :key="year.year + '/' + month.month"
+            :class="'month-tile' + (month.expanded ? ' expanded' : '')">
+            <div
+              class="date"
+              @click="toggleExpanded(month, !month.expanded)">
               <h1>
                 {{
                   month.expanded || $t('common.month' + month.month).length <= 4
                     ? $t('common.month' + month.month)
-                    : $t('common.month' + month.month).substring(0,3) + '.'
+                    : $t('common.month' + month.month).substring(0, 3) + '.'
                 }}
               </h1>
               <hr />
               <p v-if="!month.expanded">
-                {{ month.numberOfEntries + ' ' + (month.numberOfEntries === 1 ? $t('calendar.entryLabel') : $t('calendar.entriesLabel'))}}
+                {{
+                  month.numberOfEntries +
+                  ' ' +
+                  (month.numberOfEntries === 1 ? $t('calendar.entryLabel') : $t('calendar.entriesLabel'))
+                }}
               </p>
             </div>
 
             <!-- DAYS -->
-            <div v-if="month.expanded" class="row justify-start full-width">
-              <div v-for="day in getDayArray(year.year, month.month)"
-                   :key="year.year + '/' + month.month + '/' + day"
-                   :class="'day-entry' + (numberOfDayEntries(month.days, Number(day)) > 0 ? ' with-entries' : '')"
-                   @click="() => showDayPopup(month.days.find(d => d.day.toString() === day))">
+            <div
+              v-if="month.expanded"
+              class="row justify-start full-width">
+              <div
+                v-for="day in getDayArray(year.year, month.month)"
+                :key="year.year + '/' + month.month + '/' + day"
+                :class="'day-entry' + (numberOfDayEntries(month.days, Number(day)) > 0 ? ' with-entries' : '')"
+                @click="() => showDayPopup(month.days.find((d) => d.day.toString() === day))">
                 {{ day }}
               </div>
             </div>
           </div>
         </div>
       </div>
-      <p v-if="years.length === 0" class="no-data-text">
+      <p
+        v-if="years.length === 0"
+        class="no-data-text">
         {{ $t('diary.noData') }}
       </p>
     </q-card-section>
   </q-card>
 
   <q-dialog v-model="dayDialog">
-    <DiaryEntryCard v-if="selectedDay?.entries.length === 1"
-                    :entry="selectedDay?.entries[0]"
-                    @close="dayDialog=false"
-                    @created-entry="() => {}"/>
+    <DiaryEntryCard
+      v-if="selectedDay?.entries.length === 1"
+      :entry="selectedDay?.entries[0]"
+      @close="dayDialog = false"
+      @created-entry="() => {}" />
     <q-card v-if="selectedDay && selectedDay?.entries.length > 1">
       <q-card-section class="card-title with-close-icon">
-      {{
-        $t('calendar.entriesFrom') + ' ' +
-        new Intl.DateTimeFormat($i18n.locale, { dateStyle: 'long'}).format(selectedDay.fullDate)
-      }}
-      <q-icon @click="dayDialog = false"
-              name="fas fa-times"
-              class="close-icon"
-              flat round dense v-close-popup/>
-    </q-card-section>
-    <q-card-section>
-      <ul class="day-entry-list">
-        <li v-for="(entry, i) in selectedDay.entries"
-            :key="'entry'+i"
-            @click="() => {
+        {{
+          $t('calendar.entriesFrom') +
+          ' ' +
+          new Intl.DateTimeFormat($i18n.locale, {dateStyle: 'long'}).format(selectedDay.fullDate)
+        }}
+        <q-icon
+          @click="dayDialog = false"
+          name="fas fa-times"
+          class="close-icon"
+          flat
+          round
+          dense
+          v-close-popup />
+      </q-card-section>
+      <q-card-section>
+        <ul class="day-entry-list">
+          <li
+            v-for="(entry, i) in selectedDay.entries"
+            :key="'entry' + i"
+            @click="
+              () => {
                 subDayDialog = true;
-                subDayEntry = entry
-                }">
+                subDayEntry = entry;
+              }
+            ">
             {{
               $t('calendar.entryTimeLabel1') +
-              new Intl.DateTimeFormat($i18n.locale, { timeStyle: 'short'}).format(entry.date) +
+              new Intl.DateTimeFormat($i18n.locale, {
+                timeStyle: 'short'
+              }).format(entry.date) +
               $t('calendar.entryTimeLabel2')
             }}
-        </li>
-
-      </ul>
-    </q-card-section>
-
+          </li>
+        </ul>
+      </q-card-section>
     </q-card>
-
-
   </q-dialog>
   <q-dialog v-model="subDayDialog">
-    <DiaryEntryCard :entry="subDayEntry"
-                    @close="subDayDialog=false"
-    />
-    </q-dialog>
+    <DiaryEntryCard
+      :entry="subDayEntry"
+      @close="subDayDialog = false" />
+  </q-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { DiaryEntry } from '../model/interfaces';
+import {defineComponent, PropType} from 'vue';
+import {DiaryEntry} from '../model/interfaces';
 import DiaryEntryCard from './DiaryEntryCard.vue';
 
 interface Day {
@@ -111,28 +140,28 @@ interface Day {
   fullDate: Date;
   entries: DiaryEntry[];
   expanded: boolean;
-};
+}
 
 interface Month {
   month: number;
   numberOfEntries: number;
   days: Day[];
   expanded: boolean;
-};
+}
 
 interface Year {
   year: number;
   numberOfEntries: number;
   months: Month[];
   expanded: boolean;
-};
+}
 
 /**
  * Mocks the login to the platform with a token displayed in the UI.
  */
 export default defineComponent({
   name: 'CalendarCard',
-  components: { DiaryEntryCard },
+  components: {DiaryEntryCard},
   data() {
     return {
       years: new Array<Year>(),
@@ -141,14 +170,12 @@ export default defineComponent({
       selectedDay: undefined as Day | undefined,
       subDayEntry: undefined as DiaryEntry | undefined,
       lang: this.$i18n.locale
-    }
+    };
   },
   /**
    *
    */
-  emits: {
-
-  },
+  emits: {},
   props: {
     /**
      * The DiaryEntries to display.
@@ -173,25 +200,19 @@ export default defineComponent({
       }
     },
     numberOfDayEntries(days: Day[], day: number): number {
-      const index = days.findIndex(d => d.day === day);
-      return index === - 1
-        ? 0
-        : days[index].entries.length;
+      const index = days.findIndex((d) => d.day === day);
+      return index === -1 ? 0 : days[index].entries.length;
     },
     showDayPopup(day: Day | undefined) {
       this.selectedDay = day;
       this.dayDialog = true;
     },
     getMonthLength(year: number, month: number): number {
-      if (month === 1 && (year % 4 === 0) && (year % 100 !== 0) || (year % 400 === 0)) {
+      if ((month === 1 && year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
         // february in leap year
         return 29;
       }
-      return [
-        31, 28, 31, 30,
-        31, 30, 31, 31,
-        30, 31, 30, 31
-      ][month];
+      return [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     },
     getDayOfFirstDay(year: number, month: number): number {
       const date = new Date(year.toString() + '/' + (month + 1).toString() + '/' + '1');
@@ -201,19 +222,19 @@ export default defineComponent({
       const firstDay = this.getDayOfFirstDay(year, month);
       const numberOfDays = this.getMonthLength(year, month);
       const dayArray = new Array(firstDay === 0 ? 6 : firstDay - 1).map(() => ' ');
-      for(let i = 1; i <= numberOfDays; i++) {
+      for (let i = 1; i <= numberOfDays; i++) {
         dayArray.push(i.toString());
       }
       return dayArray;
     },
     buildDataStructure(entries: DiaryEntry[]) {
       this.years = [];
-      entries.forEach(diaryEntry => {
-      const entryYear = diaryEntry.date.getFullYear();
-      const entryMonth = diaryEntry.date.getMonth();
-      const entryDay = diaryEntry.date.getDate();
-      const yearEntry = {
-        year: entryYear,
+      entries.forEach((diaryEntry) => {
+        const entryYear = diaryEntry.date.getFullYear();
+        const entryMonth = diaryEntry.date.getMonth();
+        const entryDay = diaryEntry.date.getDate();
+        const yearEntry = {
+          year: entryYear,
           numberOfEntries: 1,
           expanded: false,
           months: [
@@ -224,51 +245,57 @@ export default defineComponent({
               days: [
                 {
                   day: entryDay,
-                  fullDate: new Date(`${entryYear}/${entryMonth+1}/${entryDay}`),
+                  fullDate: new Date(`${entryYear}/${entryMonth + 1}/${entryDay}`),
                   expanded: false,
                   entries: [diaryEntry]
                 }
               ]
             }
           ]
-      };
-      let foundYear = false;
-      this.years.forEach(year => {
-        if (!foundYear && year.year === entryYear) { // we have already a entry for the year
-          foundYear = true;
-          let foundMonth = false;
-          year.months.forEach(month => {
-            if (!foundMonth && month.month === entryMonth) { // we have already a entry for the month
-              foundMonth = true;
-              let foundDay = false;
-              month.days.forEach(day => {
-                if (!foundDay && day.day === entryDay) { // we have already a entry for the exact day
-                  foundDay = true;
-                  day.entries.push(diaryEntry);
+        };
+        let foundYear = false;
+        this.years.forEach((year) => {
+          if (!foundYear && year.year === entryYear) {
+            // we have already a entry for the year
+            foundYear = true;
+            let foundMonth = false;
+            year.months.forEach((month) => {
+              if (!foundMonth && month.month === entryMonth) {
+                // we have already a entry for the month
+                foundMonth = true;
+                let foundDay = false;
+                month.days.forEach((day) => {
+                  if (!foundDay && day.day === entryDay) {
+                    // we have already a entry for the exact day
+                    foundDay = true;
+                    day.entries.push(diaryEntry);
+                    month.numberOfEntries++;
+                    year.numberOfEntries++;
+                  }
+                });
+                if (!foundDay) {
+                  // create new day entry
+                  month.days.push(yearEntry.months[0].days[0]);
+                  month.days.sort((a, b) => a.day - b.day);
                   month.numberOfEntries++;
                   year.numberOfEntries++;
                 }
-              });
-              if (!foundDay) { // create new day entry
-                month.days.push(yearEntry.months[0].days[0]);
-                month.days.sort((a, b) => a.day - b.day);
-                month.numberOfEntries++;
-                year.numberOfEntries++;
               }
+            });
+            if (!foundMonth) {
+              // create new month entry
+              year.months.push(yearEntry.months[0]);
+              year.months.sort((a, b) => a.month - b.month);
+              year.numberOfEntries++;
             }
-          });
-          if (!foundMonth) { // create new month entry
-            year.months.push(yearEntry.months[0]);
-            year.months.sort((a, b) => a.month - b.month);
-            year.numberOfEntries++;
           }
+        });
+        if (!foundYear) {
+          // create new year entry
+          this.years.push(yearEntry);
+          this.years.sort((a, b) => a.year - b.year);
         }
       });
-      if(!foundYear) { // create new year entry
-        this.years.push(yearEntry);
-        this.years.sort((a, b ) => a.year - b.year);
-      }
-    });
     }
   },
   watch: {
@@ -292,7 +319,8 @@ export default defineComponent({
   width: 100%;
   align-content: center;
 }
-.year-tile.expanded, .month-tile.expanded{
+.year-tile.expanded,
+.month-tile.expanded {
   width: 100%;
   cursor: unset;
 }
@@ -307,7 +335,8 @@ export default defineComponent({
   cursor: pointer;
   font-size: 0.6em;
 }
-.year-tile:hover, .month-tile:hover {
+.year-tile:hover,
+.month-tile:hover {
   background-color: $lightGray;
 }
 .year-tile h1 {
@@ -369,7 +398,7 @@ hr {
 }
 .day-entry-list {
   list-style: none;
-  padding: 0
+  padding: 0;
 }
 .day-entry-list li {
   cursor: pointer;

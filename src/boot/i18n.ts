@@ -1,6 +1,6 @@
-import { boot } from 'quasar/wrappers';
-import { FhirUtilLanguageType } from '@i4mi/mhealth-proto-components';
-import { createI18n } from 'vue-i18n';
+import {boot} from 'quasar/wrappers';
+import {FhirUtilLanguageType} from '@i4mi/mhealth-proto-components';
+import {createI18n} from 'vue-i18n';
 
 /**
  * i18n.ts
@@ -22,7 +22,7 @@ export enum APP_LANGUAGES {
 
 export const AVAILABLE_LANGUAGES = [APP_LANGUAGES.DE, APP_LANGUAGES.FR];
 
-export default boot(({ app }) => {
+export default boot(({app}) => {
   // Create i18n instance with options
   const i18n = createI18n({
     locale: APP_LANGUAGES.DE,
@@ -44,9 +44,7 @@ export default boot(({ app }) => {
  *            - "fr"
  *            - "rm"
  */
-export function getLangStringFromLocale(
-  locale: string
-): FhirUtilLanguageType {
+export function getLangStringFromLocale(locale: string): FhirUtilLanguageType {
   // TODO is there a way to import current local outside of vue component?
   // source but didn't find a working solution: https://stackoverflow.com/questions/57049471/problem-to-use-vuei18n-outside-a-component
   // When this works, this message call could be done within the getClassCodeString() and getTypeCodeString() of fhirUtils.ts

@@ -1,4 +1,4 @@
-import { RouteRecordRaw } from 'vue-router';
+import {RouteRecordRaw} from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -24,10 +24,6 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'upload',
         component: () => import('pages/Upload.vue')
-      },
-      {
-        path: 'allergies',
-        component: () => import('pages/Allergies.vue')
       }
     ]
   },

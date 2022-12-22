@@ -2,52 +2,69 @@
   <q-card class="suspected-allergies-card">
     <q-card-section class="card-title">
       {{ $t('suspectedAllergies.title') }}
-      <q-icon @click="$emit('close', {save: false, allergies: []})"  name="fas fa-times" class="close-icon" flat round dense v-close-popup/>
+      <q-icon
+        @click="$emit('close', {save: false, allergies: []})"
+        name="fas fa-times"
+        class="close-icon"
+        flat
+        round
+        dense
+        v-close-popup />
     </q-card-section>
     <q-card-section>
       <p>
         {{ $t('suspectedAllergies.explanation') }}
       </p>
-      <q-select v-model="allergies"
-                :label="$t('common.typeForSearch')"
-                :options="searchAllergies"
-                multiple
-                options-dense
-                hide-selected
-                use-input
-                :option-label="(option) => option &&  option.languageDisplays[lang]"
-                @filter="(val, update) => {
-                  const search = val.toLowerCase();
-                  if (val === '') {
-                    return
-                  } else {
-                    update(() => {
-                      searchAllergies = availableAllergies.filter(ac => ac.languageDisplays[lang].toLowerCase().includes(search))
-                    });
-                  }
-                }"
-        />
+      <q-select
+        v-model="allergies"
+        :label="$t('common.typeForSearch')"
+        :options="searchAllergies"
+        multiple
+        options-dense
+        hide-selected
+        use-input
+        :option-label="(option) => option && option.languageDisplays[lang]"
+        @filter="
+          (val, update) => {
+            const search = val.toLowerCase();
+            if (val === '') {
+              return;
+            } else {
+              update(() => {
+                searchAllergies = availableAllergies.filter((ac) =>
+                  ac.languageDisplays[lang].toLowerCase().includes(search)
+                );
+              });
+            }
+          }
+        " />
 
       <ul>
-        <li v-for="allergy, i in allergies" :key="allergy.defaultCoding.code">
+        <li
+          v-for="(allergy, i) in allergies"
+          :key="allergy.defaultCoding.code">
           {{ allergy.languageDisplays[lang] }}
-          <span @click="() => allergies.splice(i,1)"
-                class="delete-x">
-                [ {{$t('common.remove')}} ]
+          <span
+            @click="() => allergies.splice(i, 1)"
+            class="delete-x"
+            style="cursor: pointer">
+            [ {{ $t('common.remove') }} ]
           </span>
         </li>
       </ul>
-      </q-card-section>
-      <q-card-actions align="center">
-
-        <q-btn :label="$t('common.save')" @click="$emit('close', {save: true, allergies: allergies})" />
-      </q-card-actions>
+    </q-card-section>
+    <q-card-actions align="center">
+      <q-btn
+        :label="$t('common.save')"
+        @click="$emit('close', {save: true, allergies: allergies})" />
+    </q-card-actions>
   </q-card>
 </template>
 
 <script lang="ts">
-import { AllergySystemCodeExtension } from '@i4mi/mhealth-proto-components';
-import { defineComponent, PropType } from 'vue';
+import {AllergySystemCodeExtension} from '@i4mi/mhealth-proto-components';
+import {getLangStringFromLocale} from 'src/boot/i18n';
+import {defineComponent, PropType} from 'vue';
 
 /**
  * Mocks the login to the platform with a token displayed in the UI.
@@ -58,8 +75,8 @@ export default defineComponent({
     return {
       allergies: this.suspectedAllergies.slice(),
       searchAllergies: this.availableAllergies.slice(),
-      lang: this.$i18n.locale.substring(0,2)
-    }
+      lang: getLangStringFromLocale(this.$i18n.locale)
+    };
   },
   /**
    *
@@ -69,9 +86,9 @@ export default defineComponent({
      * Notify parent about new state of suspected allergies.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    'close': (payload: {save: boolean, allergies: AllergySystemCodeExtension[]}) => {
+    close: (payload: {save: boolean; allergies: AllergySystemCodeExtension[]}) => {
       return true;
-    },
+    }
   },
   props: {
     /**
@@ -89,8 +106,7 @@ export default defineComponent({
       required: true
     }
   },
-  methods: {
-  }
+  methods: {}
 });
 </script>
 

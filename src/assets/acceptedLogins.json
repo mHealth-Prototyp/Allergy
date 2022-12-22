@@ -25,6 +25,13 @@
     "password": "test",
     "phone": "079 123 45 67",
     "givenName": "Matteo",
+    "familyName": "Lagrande"
+  },
+  {
+    "username": "dev@on.ly",
+    "password": "test",
+    "phone": "079 123 45 67",
+    "givenName": "Matteo",
     "familyName": "Lecomte"
   },
   {
@@ -33,5 +40,12 @@
     "givenName": "Patricia",
     "familyName": "Laurent",
     "phone": "+41 32 321 61 11"
+  },
+  {
+    "username": "laura.baumann@test.ch",
+    "password": "l4ur4",
+    "givenName": "Laura",
+    "familyName": "Baumann",
+    "phone": "078 563 48 32"
   }
 ]

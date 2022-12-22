@@ -1,63 +1,82 @@
 <template>
-    <q-card class="dashboard-card diary-list-card">
-      <q-card-section class="card-title">
-        <q-icon name="fas fa-book" class="big-icon"/>
-        {{$t('index.diaryTitle')}}
-      </q-card-section>
-      <q-card-section>
-        <p class="intro-text">{{$t('index.diaryText')}}</p>
-        <p v-if="diary.length === 0" class="no-data-text">
-          {{ $t('diary.noData') }}
-        </p>
-        <ul class="diary-entries">
-          <li v-for="entry, index in diaryEntries" :key="'diaryEntry.' + index">
-            <div class="diary-entry-button"
-                @click="$emit('selected-entry', entry)">
-                <p class="diary-entry-button-title">
-                  {{ $t('diary.title') }}
-                </p>
-                <p class="diary-entry-button-date">
-                  {{new Intl.DateTimeFormat($i18n.locale, { dateStyle: 'medium', timeStyle: 'short'}).format(entry.date)}}
-                </p>
-            </div>
-          </li>
-        </ul>
-        <ul class="diary-pages" v-if="diaryPages > 1">
-          <li v-for="page in diaryPages" :key="'pagebutton'+page">
-            <span @click="() => setDiaryPage(page)"
-                  :class="page === currentDiaryPage ? 'clickable current-page' : 'clickable'">
-              &nbsp;{{page}}&nbsp;
-            </span>
-            <span v-if="page !== diaryPages">•</span>
+  <q-card class="dashboard-card diary-list-card">
+    <q-card-section class="card-title">
+      <q-icon
+        name="fas fa-book"
+        class="big-icon" />
+      {{ $t('index.diaryTitle') }}
+    </q-card-section>
+    <q-card-section>
+      <p class="intro-text">{{ $t('index.diaryText') }}</p>
+      <p
+        v-if="diary.length === 0"
+        class="no-data-text">
+        {{ $t('diary.noData') }}
+      </p>
+      <ul class="diary-entries">
+        <li
+          v-for="(entry, index) in diaryEntries"
+          :key="'diaryEntry.' + index">
+          <div
+            class="diary-entry-button"
+            @click="$emit('selected-entry', entry)">
+            <p class="diary-entry-button-title">
+              {{ $t('diary.title') }}
+            </p>
+            <p class="diary-entry-button-date">
+              {{
+                new Intl.DateTimeFormat($i18n.locale, {
+                  dateStyle: 'medium',
+                  timeStyle: 'short'
+                }).format(entry.date)
+              }}
+            </p>
+          </div>
+        </li>
+      </ul>
+      <ul
+        class="diary-pages"
+        v-if="diaryPages > 1">
+        <li
+          v-for="page in diaryPages"
+          :key="'pagebutton' + page">
+          <span
+            @click="() => setDiaryPage(page)"
+            :class="page === currentDiaryPage ? 'clickable current-page' : 'clickable'">
+            &nbsp;{{ page }}&nbsp;
+          </span>
+          <span v-if="page !== diaryPages">•</span>
+        </li>
+      </ul>
+    </q-card-section>
 
-          </li>
-        </ul>
-      </q-card-section>
-
-      <hr  />
-      <q-card-actions align="center" class="card-actions">
-        <q-btn :label="$t('diary.createTitle')"
-              @click="$emit('request-new-entry')" />
-      </q-card-actions>
-    </q-card>
+    <hr />
+    <q-card-actions
+      align="center"
+      class="card-actions">
+      <q-btn
+        :label="$t('diary.createTitle')"
+        @click="$emit('request-new-entry')" />
+    </q-card-actions>
+  </q-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { DiaryEntry} from '../model/interfaces';
+import {defineComponent, PropType} from 'vue';
+import {DiaryEntry} from '../model/interfaces';
 
 /**
  * Component to create or display a diary entry
  */
 export default defineComponent({
   name: 'DiaryListCard',
-  components: { },
+  components: {},
   data() {
     return {
       diaryEntries: new Array<DiaryEntry>(),
       diaryPages: 0,
       currentDiaryPage: 0
-    }
+    };
   },
   /**
    *
@@ -74,7 +93,7 @@ export default defineComponent({
      */
     'request-new-entry': () => {
       return true;
-    },
+    }
   },
   props: {
     /**
@@ -105,11 +124,9 @@ export default defineComponent({
   methods: {
     setDiaryPage(page: number): void {
       this.diaryPages = Math.ceil(this.$props.diary.length / this.$props.entriesPerPage);
-      this.currentDiaryPage = (page === -1)
-        ? this.diaryPages
-        : page;
+      this.currentDiaryPage = page === -1 ? this.diaryPages : page;
       const start = (this.currentDiaryPage - 1) * this.$props.entriesPerPage;
-      this.diaryEntries =this.$props.diary.slice(start, start + this.$props.entriesPerPage);
+      this.diaryEntries = this.$props.diary.slice(start, start + this.$props.entriesPerPage);
     }
   }
 });
@@ -119,7 +136,8 @@ export default defineComponent({
 .diary-list-card {
   text-align: center;
 }
-.diary-entries, .diary-pages {
+.diary-entries,
+.diary-pages {
   list-style-type: none;
   padding: 0;
   margin: 0;

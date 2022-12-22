@@ -1,8 +1,6 @@
 <template>
   <q-card class="settings-card">
-    <q-card-section class="card-title">{{
-      $t('layout.menu.settings')
-    }}</q-card-section>
+    <q-card-section class="card-title">{{ $t('layout.menu.settings') }}</q-card-section>
     <q-card-section>
       <form>
         <h3>{{ $t('common.language') }}</h3>
@@ -10,19 +8,16 @@
         <q-select
           class="lang-select"
           v-model="language"
+          outlined
           :options="availableLanguages"
-          :option-label="
-            (value) => (value == null ? '-' : $t('settings.' + value))
-          "
+          :option-label="(value) => (value == null ? '-' : $t('settings.' + value))"
           :disable="availableLanguages.length < 2"
-          :label="$t('common.language')"
-          @update:model-value="updateLanguageSetting"
-        />
+          :label="$t('common.language')" />
 
         <q-separator size="0pt" />
         <h3>{{ $t('index.title') }}</h3>
         <p>{{ $t('settings.dashboardText') }}</p>
-        <DashboardSettings />
+        <DashboardSettings :trigger-update="updateChildComponentTrigger" />
         <q-separator size="0pt" />
         <h3>{{ $t('settings.exportImportTitle') }}</h3>
         <p>{{ $t('settings.exportImportText') }}</p>
@@ -31,17 +26,15 @@
           class="btn"
           outline
           color="primary"
-          :label="$t('settings.export')"
-          @click="exportData"
-        />
+          :label="$t('settings.export.title')"
+          @click="exportData" />
 
         <q-btn
           class="btn"
           outline
           color="primary"
-          :label="$t('settings.import')"
-          @click="importData"
-        />
+          :label="$t('settings.import.title')"
+          @click="importData" />
 
         <q-separator size="0pt" />
         <h3>{{ $t('settings.oidsTitle') }}</h3>
@@ -68,20 +61,24 @@
     </q-card-section>
   </q-card>
 
-  <q-dialog v-model="showExportDialog" no-backdrop-dismiss class="dialog">
-    <export-import-card exportMode @close="showExportDialog = false">
-    </export-import-card>
+  <q-dialog
+    v-model="showExportDialog"
+    class="dialog">
+    <export-card @close="showExportDialog = false"> </export-card>
   </q-dialog>
 
-  <q-dialog v-model="showImportDialog" no-backdrop-dismiss class="dialog">
-    <export-import-card @close="showImportDialog = false"> </export-import-card>
+  <q-dialog
+    v-model="showImportDialog"
+    class="dialog">
+    <import-card @close="applyImport"> </import-card>
   </q-dialog>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { APP_LANGUAGES, AVAILABLE_LANGUAGES } from '../boot/i18n';
-import ExportImportCard from 'src/components/ExportImportCard.vue';
+import {defineComponent} from 'vue';
+import {APP_LANGUAGES, AVAILABLE_LANGUAGES, getLangStringFromLocale} from '../boot/i18n';
+import ExportCard from 'src/components/ExportCard.vue';
+import ImportCard from 'src/components/ImportCard.vue';
 import DashboardSettings from 'src/components/DashboardSettings.vue';
 
 export default defineComponent({
@@ -92,42 +89,59 @@ export default defineComponent({
       availableLanguages: new Array<string>(),
       // available languages (for picker
       oids: this.$store.getOids(),
-      dashboardOptions: this.$store.getDashboardSettings(),
       showExportDialog: false,
-      showImportDialog: false
+      showImportDialog: false,
+      updateChildComponentTrigger: false
     };
+  },
+  watch: {
+    language(newLanguage: APP_LANGUAGES) {
+      this.$store.setLanguageSetting(newLanguage);
+      this.$i18n.locale = this.$store.getLanguage();
+      import(
+        /* webpackInclude: /(de|fr)\.js$/ */
+        'quasar/lang/' + getLangStringFromLocale(this.$store.getLanguage())
+      )
+        .then((lang) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+          this.$q.lang.set(lang.default);
+        })
+        .catch((error) => console.error(error));
+      this.updateChildren();
+    }
   },
   beforeMount() {
     AVAILABLE_LANGUAGES.forEach((lang) => this.availableLanguages.push(lang));
     this.reset(undefined, false);
   },
   methods: {
+    applyImport() {
+      if (this.language !== this.$store.getLanguage()) {
+        this.language = this.$store.getLanguage();
+      } else {
+        this.updateChildren();
+      }
+      this.showImportDialog = false;
+    },
     save(e: Event) {
       e.preventDefault();
     },
     reset(e: Event | undefined, getDefault: boolean): void {
       e && e.preventDefault();
-      const settings = getDefault
-        ? this.$store.getDefaultSettings()
-        : this.$store.getSettings();
+      const settings = getDefault ? this.$store.getDefaultSettings() : this.$store.getSettings();
       this.language = settings.language;
-    },
-    updateLanguageSetting(lang: APP_LANGUAGES): void {
-      if (this.$root) {
-        this.$root.$i18n.locale = lang;
-        this.$store.setLanguageSetting(lang);
-        this.$router.go(0);
-      }
     },
     exportData() {
       this.showExportDialog = true;
     },
     importData() {
       this.showImportDialog = true;
+    },
+    updateChildren() {
+      this.updateChildComponentTrigger = !this.updateChildComponentTrigger;
     }
   },
-  watch: {},
-  components: { ExportImportCard, DashboardSettings }
+  components: {ExportCard, DashboardSettings, ImportCard}
 });
 </script>
 

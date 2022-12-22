@@ -1,47 +1,23 @@
 export default {
   common: {
-    maleGender: 'männlich',
-    femaleGender: 'weiblich',
-    otherGender: 'andere',
+    male: 'männlich',
+    female: 'weiblich',
+    other: 'anderes',
     unknown: 'unbekannt',
     cancel: 'Abbrechen',
     close: 'Schliessen',
     copy: 'Kopieren',
-    back: 'zurück',
-    continue: 'weiter',
     save: 'Speichern',
-    loadDefault: 'Standardwerte laden',
     error: 'Ups. Da ist leider etwas schiefgegangen.',
-    givenName: 'Vorname',
-    familyName: 'Name',
     gender: 'Geschlecht',
     address: 'Adresse',
-    canton: 'Kanton',
-    search: 'Suchen',
     birthdate: 'Geburtsdatum',
-    eprSpid: 'EPR SPID',
-    localPid: 'Lokale PID',
-    kiloByte: 'Kb',
-    megaByte: 'Mb',
-    identifier: 'Identifier',
-    logout: 'Ausloggen',
     allergy: 'Allergie',
     intolerance: 'Intoleranz',
-    yes: 'ja',
-    no: 'nein',
-    ahv: 'AHV-Nummer',
-    author: 'Autor',
-    ok: 'OK',
     date: 'Datum',
     remove: 'entfernen',
-    description: 'Beschreibung',
-    class: 'Klasse',
     type: 'Typ',
-    fileType: 'Dateityp',
-    fileSize: 'Dateigrösse',
     language: 'Sprache',
-    noResults: 'keine Resultate',
-    fieldRequired: 'Dies ist ein Pflichtfeld.',
     typeForSearch: 'Tippen um zu suchen',
     month0: 'Januar',
     month1: 'Februar',
@@ -63,9 +39,11 @@ export default {
     title: 'Dashboard'
   },
   about: {
-    title: 'Über den mHealth Prototypen (Patient*innen-Ansicht)',
-    aboutText: 'Der mHealth Prototyp (Patient*innen-Ansicht) entstand im Rahmen eines Projektes von eHealth Suisse und dem Institut für Medizininformatik I4MI der Berner Fachhochschule. Er soll als Anschauungsobjekt für patientenzentrierte Use Cases mit dem EPD Playground dienen. Der EPD Playground ist eine bewusst niederschwellig erstellte Test-Instanz des eidgenössischen Patientendossiers EPD.',
-    readMore: 'Unter den folgenden Links erfahren Sie mehr zu den Projektpartnern, zum elektronischen Patientendossier und zum EPD Playground:',
+    title: 'Über den mHealth Prototypen (Allergie-Szenario)',
+    aboutText:
+      'Der mHealth Prototyp (Allergie-Szenario) entstand im Rahmen eines Projektes von eHealth Suisse und dem Institut für Medizininformatik I4MI der Berner Fachhochschule. Er soll als Demonstrator für einen patientenzentrierte Allergie-Use Case mit dem EPD Playground dienen.',
+    readMore:
+      'Unter den folgenden Links erfahren Sie mehr zu den Projektpartnern, zum elektronischen Patientendossier und zum EPD Playground:',
     version: 'Version:'
   },
   calendar: {
@@ -81,35 +59,7 @@ export default {
     openPrompt1: 'Möchten Sie das Dokument "',
     openPrompt2: '" wirklich laden?',
     unknownTitle: 'unbenanntes Dokument',
-    searchComponent: {
-      documentTableLabel: 'Dokumente für MPI ID: ',
-      fetchMpi: 'Lade Master Patient Index ID...',
-      fetchedMpi: 'Master Patient Index ID geladen: ',
-      fetchMetadata: 'Lade Dokument-Metadaten...',
-      fetchingError: 'Die Metadaten konnten leider nicht geladen werden.',
-    },
-    uploadComponent: {
-      titleLabel: 'Titel',
-      titleInput: 'Titel der Datei',
-      descriptionText: 'Ergänzen Sie die Beschreibung zur Datei.',
-      uploadFile: 'Datei hochladen für: ',
-      fileTypeCategory: 'Kategorie des Dateityps',
-      fileType: 'Typ der Datei',
-      fileTypeText: 'Geben Sie den Typ der Datei an.',
-      selectFile: 'Datei auswählen',
-      selectFileText: 'Wählen Sie eine Datei aus, die Sie hochladen möchten:',
-      metadata: 'Metadaten',
-      metadataText: 'Ergänzen Sie die Metadaten zur Datei.',
-      titleAndDescription: 'Titel & Beschreibung',
-      languageText: 'Geben Sie die Sprache des Dateiinhalts an.',
-      typeNotSufficient: 'Bei nicht näher bezeichneten Dateitypen ist die Kategorie der Datei erforderlich.',
-      creatingInstitution: 'Erstellende Institution',
-      creatingInstitutionText: 'Geben Sie den Typ der Institution an, die die Datei erstellt hat.',
-      institution: 'Institution',
-      specialisation: 'Fachrichtung',
-      specialisationText: 'Geben Sie den Fachrichtung der Institution an, die die Datei erstellt hat.',
-      jsonFhir: 'JSON-Datei mit FHIR-Inhalt'
-    }
+    documentViewTitle: 'FHIR-Dokumentenanzeiger'
   },
   layout: {
     title: 'Mein EPD',
@@ -132,35 +82,7 @@ export default {
     tabSuspected: 'Vermutete Allerien',
     tabSuspectedShort: 'Vermutet',
     suspectedSubtitle: 'Vermutete Allergie oder Intoleranz',
-    noEntries: 'Es sind keine Allergien oder Intoleranzen vorhanden.',
-    allergy: 'Allergie',
-    intolerance: 'Intoleranz',
-    typeLabel: 'Typ',
-    codeDisplayLabel: 'Beschreibung',
-    clinicalStateLabel: 'Status',
-    verificationStateLabel: 'Verifikation',
-    reactionLabel: 'Reaktion',
-    reactionsLabel: 'Reaktionen',
-    reactionDateLabel: 'Reaktionsdatum',
-    reactionSeverityLabel: 'Schwere',
-    reactionSubstanceLabel: 'Substanz',
-    reactionDescriptionLabel: 'Beschreibung',
-    reactionNoteLabel: 'Kommentar zur Reaktion',
-    reactionLocationLabel: 'Lokalisation',
-    additionalInformation: 'Zusätzliche Informationen:',
-    categoryLabel: 'Kategorie',
-    criticalityLabel: 'Schweregrad',
-    noteLabel: 'Kommentar',
-    exposureDateLabel: 'Expositionsdatum',
-    exposureRouteLabel: 'Expositionsweg',
-    noOtherDataAvailable: 'Es sind keine weiteren Daten verfügbar.',
-    status: {
-      unconfirmed: 'nicht ärztlich bestätigt',
-      confirmed: 'ärztlich bestätigt',
-      refuted: 'widerlegt',
-      'entered-in-error': 'fälschlicherweise eingegeben'
-    },
-    noAllergy: 'Keine Allergien'
+    noEntries: 'Es sind keine Allergien oder Intoleranzen vorhanden.'
   },
   diary: {
     title: 'Tagebucheintrag vom',
@@ -171,18 +93,28 @@ export default {
     symptomsLabel: 'Symptome',
     symptomsHint: 'Erfassen Sie Ihre Symptome zum Tagebuch-Eintrag.',
     allergyLabel: 'Allergie',
-    allergyHint: 'Wenn Sie vermuten, dass die Symptome mit einer Ihrer Allergien oder Intoleranzen zusammenhängen, können Sie das hier erfassen.',
+    allergyHint:
+      'Wenn Sie vermuten, dass die Symptome mit einer Ihrer Allergien oder Intoleranzen zusammenhängen, können Sie das hier erfassen.',
     noSymptoms: 'Keine Symptome erfasst',
     intensity: 'Intensität:',
     newSymptom: 'Neues Symptom:',
     editDate: 'Datum und Zeit:',
     locationAlert: 'Bitte geben Sie an, welche Stelle vom Symptom betroffen ist.',
-    noData: 'Es sind noch keine Einträge verfügbar, die angezeigt werden könnten. Erstellen Sie einen neuen Tagebuch-Eintrag, um ihn hier zu sehen.',
+    noData:
+      'Es sind noch keine Einträge verfügbar, die angezeigt werden könnten. Erstellen Sie einen neuen Tagebuch-Eintrag, um ihn hier zu sehen.',
+    medicationsLabel: 'Arzneimittel',
+    medicationsHint: 'Erfassen Sie die Medikamente, die zu diesem Zeitpunkt wirkten.'
   },
   suspectedAllergies: {
     title: 'Verdachts-Allergien',
-    explanation: 'Falls Sie den Verdacht haben, an einer Allergie oder Intoleranz zu leiden, können Sie diese hier hinzufügen um sie zu beobachten.',
+    explanation:
+      'Falls Sie den Verdacht haben, an einer Allergie oder Intoleranz zu leiden, können Sie diese hier hinzufügen um sie zu beobachten.',
     button: 'Verdachtsallergien hinzufügen'
+  },
+  preferredMedication: {
+    title: 'Regelmässige Medikamente',
+    explanation: 'Fügen Sie Ihre regelmässigen Medikamente hinzu, um sie leichter zu finden.',
+    button: 'Regelmässige Medikamente hinzufügen'
   },
   symptom: {
     unknown: '',
@@ -219,10 +151,12 @@ export default {
     en: 'Englisch',
     'fr-CH': 'Französisch (Schweiz)',
     it: 'Italienisch',
-    languageText: 'Wählen Sie die Sprache für die EPD Playground Demo App (zurzeit nur Deutsch und Französisch verfügbar).',
+    languageText:
+      'Wählen Sie die Sprache für die EPD Playground Demo App (zurzeit nur Deutsch und Französisch verfügbar).',
     logoutText: 'Loggen Sie sich aus oder wechseln Sie den/die Benutzer•in.',
     oidsTitle: 'OID / Systemidentifier',
-    oidsText: 'Hier können Sie die OIDs der verschiedenen Code-Systeme einsehen. Die OIDs sind fest vergeben und können deshalb nicht geändert werden.',
+    oidsText:
+      'Hier können Sie die OIDs der verschiedenen Code-Systeme einsehen. Die OIDs sind fest vergeben und können deshalb nicht geändert werden.',
     oidsMpi: 'OID für das System der Master Patient Index ID',
     oidsSpid: 'OID für das System der EPR SPID',
     oidsAhv: 'OID für das System der AHV-Nummern',
@@ -233,16 +167,30 @@ export default {
     newDiaryEntry: 'Eingabemaske für Tagebuch-Einträge',
     calendar: 'Kalender-Ansicht der Tagebuch-Einträge',
     allergies: 'Übersicht der bestätigten und vermuteten Allergien und Intoleranzen.',
-    exportImportTitle: 'Lokale Daten importieren und exportieren',
-    exportImportText: 'Hier können Sie die lokal gespeicherten Daten (Tagebucheinträge, vermutete Allergien und Einstellungen) exportieren und importieren. Beachten Sie, dass die bestehenden Daten beim Import überschrieben werden.',
-    export: 'exportieren',
-    import: 'importieren',
-  },
-  exportImport: {
-    exportTitle: 'Lokale Daten exportieren',
-    exportText: 'Kopieren Sie einfach das unten stehende JSON und speichern Sie es ab.',
-    importTitle: 'Lokale Daten importieren',
-    importText: 'Fügen Sie das zuvor exportierte JSON unten ein.',
+    exportImportTitle: 'Lokale Daten',
+    exportImportText:
+      'Hier können Sie Ihre lokalen Daten (Tagebucheinträge, vermutete Allergien, regelmässige Medikamente und Einstellungen) speichern und laden. Zu Demonstrationszwecken können Sie auch Daten nach vordefinierten Szenarien laden.',
+    export: {
+      title: 'Speichern',
+      backupName: 'Name des Backups',
+      backup: 'Das Backup kopieren',
+      copied: 'Das Backup wurde kopiert!'
+    },
+    import: {
+      title: 'Laden',
+      backup: 'Ein Backup einfügen',
+      patient: 'Sie sind eingeloggt als: ',
+      keepData: 'Daten behalten',
+      chooseDate: 'Datum des letzten Eintrags auswählen',
+      randomEntries: 'zufällige Einträge über',
+      days: 'Tage',
+      generateRandom: 'generieren',
+      chooseScenario: 'Ein Szenario auswählen',
+      or: 'oder',
+      imported: 'Das Backup wurde geladen!'
+    },
+    pollenMap: 'Visualisierung der Pollenbelastung auf einer Karte',
+    airQuality: 'Zeitstrahl der Luftverschmutzung'
   },
   e404: {
     title: '404',
@@ -251,12 +199,16 @@ export default {
   },
   timeline: {
     title: 'Ihre Timeline',
+    chartTitle: 'Timeline der Symptome und Medikamente',
     xAxis: 'Datum',
     yAxis: 'Intensität des Symptoms',
     filter: 'Nach Allergie filtern',
-    noShowText: 'Ihr Bildschirm ist nicht breit genug, um Ihre Timeline anzuzeigen. Versuchen Sie es im Querformat oder wechseln Sie den Bildschirm.',
+    noShowText:
+      'Ihr Bildschirm ist nicht breit genug, um Ihre Timeline anzuzeigen. Versuchen Sie es im Querformat oder wechseln Sie den Bildschirm.',
     date: 'Datum',
-    noGraph: 'Es wurde keine Tagebucheinträge gefunden.'
+    noGraph: 'Es wurde keine Tagebucheinträge gefunden.',
+    taken: 'genommen',
+    notTaken: 'nicht genommen'
   },
   dashboardFAB: {
     title: 'Dashboardeinstellungen',
@@ -264,6 +216,112 @@ export default {
     allEntries: 'alle Einträge',
     last30days: 'letzte 30 Tage',
     last7days: 'letzte 7 Tage',
-    componentsText: 'Komponenten zum Anzeigen:'
+    componentsText: 'Komponenten zum Anzeigen:',
+    stationText: 'Messstation für Pollen und Schadstoffe:',
+    pollenText: 'Pollen zum Anzeigen:'
+  },
+  pollen: {
+    title: 'Pollenkarte',
+    current_forecast: 'Aktuelle Prognose in ',
+    no_measurement: 'Keine Messung, Station temporär ausser Betrieb',
+    measurement_0: 'Keine Belastung',
+    measurement_1: 'Schwache Belastung',
+    measurement_2: 'Mässige Belastung',
+    measurement_3: 'Starke Belastung',
+    measurement_4: 'Sehr Starke Belastung',
+    more_information: 'Weitere Informationen auf pollenundallergie.ch',
+    unit: 'Partikel / m³',
+    noStation: 'Keine Messstation ausgewählt.',
+    noPollen: 'Keine Pollenart ausgewählt.',
+    noBoth: 'Keine Messstation und Pollenart ausgewählt.'
+  },
+  airQuality: {
+    title: 'Luftverschmutzung',
+    in: 'in',
+    rainfall: 'Niederschläge',
+    pollen: 'Pollen',
+    pm10: 'PM10',
+    ozone: 'Ozon',
+    o3: 'O₃',
+    mm: 'mm',
+    ppm: 'ppm',
+    ugm3: 'μg/m³',
+    dailyLimitValue: 'täglicher Expositionsgrenzwert',
+    noShowText:
+      'Ihr Bildschirm ist nicht breit genug, um die Luftverschmutzung Timeline anzuzeigen. Versuchen Sie es im Querformat oder wechseln Sie den Bildschirm.',
+    noStation: 'Keine Messstation ausgewählt.'
+  },
+  fhirPatient: {
+    resourceType: 'PatientIn',
+    name: 'Name'
+  },
+  fhirComposition: {
+    status: 'Status',
+    compositionStatus: {
+      preliminary: 'vorläufig',
+      final: 'final',
+      amended: 'berichtigt',
+      'entered-in-error': 'im Irrtum'
+    },
+    subject: 'Subjekt'
+  },
+  fhirAllergyIntolerance: {
+    clinicalStatus: 'Klinischer Status',
+    allergyIntoleranceClinicalStatus: {
+      active: 'aktiv',
+      inactive: 'inaktiv',
+      resolved: 'aufgelöst'
+    },
+    verificationStatus: 'Verifizierung Status',
+    allergyIntoleranceVerificationStatus: {
+      unconfirmed: 'unbestätigt',
+      confirmed: 'bestätigt',
+      refuted: 'widerlegt',
+      'entered-in-error': 'im Irrtum'
+    },
+    type: 'Typ',
+    allergyIntoleranceType: {
+      allergy: 'Allergie',
+      intolerance: 'Intoleranz'
+    },
+    criticality: 'Kritikalität',
+    allergyIntoleranceCriticality: {
+      low: 'niedrig',
+      high: 'hoch',
+      'unable-to-assess': 'nicht bewertbar'
+    },
+    category: 'Kategorie',
+    allergyIntoleranceCategory: {
+      food: 'Nahrung',
+      medication: 'Medikament',
+      environment: 'Umwelt',
+      biologic: 'biologisch'
+    },
+    code: 'Code',
+    reactions: 'Reaktionen',
+    substance: 'Substanz',
+    manifestation: 'Manifestation',
+    severity: 'Schweregrad',
+    exposureRoute: 'Expositionsverlauf'
+  },
+  export: {
+    title: 'Tagebuch ins EPD exportieren',
+    text: 'Zeitraum für den Export auswählen',
+    export: 'exportieren',
+    compositionTitle: 'Allergie- und Intoleranztagebuch vom',
+    to: 'bis',
+    knownAllergies: 'Bekannte Allergien und Intoleranzen',
+    suspectedAllergies: 'Vermutete Allergien und Intoleranzen',
+    diaryEntries: 'Tagebucheinträge',
+    airQualityData: 'Luftqualitätsdaten',
+    dataAbsentReasonLabel: 'Grund der fehlenden Anmerkung',
+    'asked-declined': 'gefragt, aber abgelehnt',
+    concernedAllergy: 'Betroffene Allergie oder Intoleranz',
+    filename: 'Titel der Datei',
+    description: 'Beschreibung der Datei',
+    medicationTaken: 'Eingenommene Medikamente',
+    station: 'Messstation',
+    short: 'Stationskürzel',
+    lngLat: 'Längen- / Breitengrad'
   }
 };

@@ -1,13 +1,10 @@
 <template>
   <q-card :class="'diary-card' + dashBoardMode ? ' dashboard-card' : ''">
-    <q-card-section
-      :class="'card-title' + (dashBoardMode ? '' : ' with-close-icon')"
-    >
+    <q-card-section :class="'card-title' + (dashBoardMode ? '' : ' with-close-icon')">
       <q-icon
         name="fas fa-book-medical"
         class="big-icon"
-        v-if="dashBoardMode"
-      />
+        v-if="dashBoardMode" />
       {{
         mode === 'display'
           ? $t('diary.title') +
@@ -26,12 +23,13 @@
         flat
         round
         dense
-        v-close-popup
-      />
+        v-close-popup />
     </q-card-section>
     <q-card-section>
       <!-- DATE -->
-      <div class="row" v-if="mode === 'create'">
+      <div
+        class="row"
+        v-if="mode === 'create'">
         <div class="col-4">
           <span class="form-label">
             {{ $t('diary.dateLabel') }}
@@ -59,8 +57,7 @@
                 }
               "
               buttons
-              :label-set="$t('common.save')"
-            >
+              :label-set="$t('common.save')">
               <div class="datetime-wrapper">
                 <q-date
                   v-model="scope.value"
@@ -68,8 +65,14 @@
                   style="margin-right: 1em"
                   minimal
                   flat
-                />
-                <q-time v-model="scope.value" mask="YYYY-MM-DD HH:mm" flat />
+                  :options="dateSelectorOptions" />
+                <q-time
+                  v-model="scope.value"
+                  mask="YYYY-MM-DD HH:mm"
+                  flat
+                  :default-date="`${$today.getFullYear()}/${('0' + ($today.getMonth() + 1)).slice(-2)}/${(
+                    '0' + $today.getDate()
+                  ).slice(-2)}`" />
               </div>
             </q-popup-edit>
           </span>
@@ -78,7 +81,9 @@
 
       <hr v-if="mode === 'create'" />
       <!-- SYMPTOMS -->
-      <div class="row" v-if="symptoms.length > 0 || mode === 'create'">
+      <div
+        class="row"
+        v-if="symptoms.length > 0 || mode === 'create'">
         <div class="col-4">
           <span class="form-label">
             {{ $t('diary.symptomsLabel') }}
@@ -87,16 +92,15 @@
         <div class="col-8">
           <p
             style="text-align: left; font-size: small"
-            v-if="mode === 'create'"
-          >
+            v-if="mode === 'create'">
             {{ $t('diary.symptomsHint') }}
           </p>
           <ul class="editable-list">
-            <li v-for="(symptom, index) in symptoms" :key="index">
+            <li
+              v-for="(symptom, index) in symptoms"
+              :key="index">
               <span :class="mode === 'create' ? 'editable' : ''">
-                {{ $t('symptom.' + symptom.location.name) }} ({{
-                  $t('symptom.' + symptom.intensity)
-                }})
+                {{ $t('symptom.' + symptom.location.name) }} ({{ $t('symptom.' + symptom.intensity) }})
 
                 <q-popup-edit
                   v-if="mode === 'create'"
@@ -105,50 +109,37 @@
                   buttons
                   :title="$t('diary.newSymptom')"
                   :label-set="$t('common.save')"
-                  :validate="() => validateSymptom(symptoms[index])"
-                >
+                  :validate="() => validateSymptom(symptoms[index])">
                   <q-select
                     v-model="symptoms[index].location"
                     :label="$t('symptom.location')"
                     autofocus
                     :options="symptomLocations"
-                    :option-label="
-                      (option) =>
-                        option && option.name
-                          ? $t('symptom.' + option.name)
-                          : ''
-                    "
-                  />
+                    :option-label="(option) => (option && option.name ? $t('symptom.' + option.name) : '')" />
 
                   <div class="radio-group">
-                    <span class="intensity-label">{{
-                      $t('diary.intensity')
-                    }}</span>
+                    <span class="intensity-label">{{ $t('diary.intensity') }}</span>
                     <q-radio
                       v-model="symptoms[index].intensity"
                       val="255604002"
-                      size="xs"
-                    >
+                      size="xs">
                       {{ $t('symptom.255604002') }}
                     </q-radio>
                     <q-radio
                       v-model="symptoms[index].intensity"
                       val="6736007"
-                      size="md"
-                    >
+                      size="md">
                       {{ $t('symptom.6736007') }}
                     </q-radio>
                     <q-radio
                       v-model="symptoms[index].intensity"
                       val="24484000"
-                      size="xl"
-                    >
+                      size="xl">
                       {{ $t('symptom.24484000') }} </q-radio
                     ><br />
                     <q-radio
                       v-model="symptoms[index].intensity"
-                      val="260413007"
-                    >
+                      val="260413007">
                       {{ $t('symptom.260413007') }}
                     </q-radio>
                   </div>
@@ -158,24 +149,23 @@
                 v-if="mode === 'create'"
                 name="fas fa-trash"
                 class="add-delete-icon"
-                @click="() => symptoms.splice(index, 1)"
-              />
+                @click="() => symptoms.splice(index, 1)" />
               <q-icon
                 v-if="mode === 'create' && index === symptoms.length - 1"
                 name="fas fa-plus"
                 class="inline-icon add-delete-icon"
-                @click="addNewSymptom"
-              />
+                @click="addNewSymptom" />
             </li>
             <li v-if="symptoms.length === 0">
-              <span class="editable" @click="addNewSymptom">{{
-                $t('diary.noSymptoms')
-              }}</span>
+              <span
+                class="editable"
+                @click="addNewSymptom"
+                >{{ $t('diary.noSymptoms') }}</span
+              >
               <q-icon
                 name="fas fa-plus"
                 class="inline-icon add-delete-icon"
-                @click="addNewSymptom"
-              />
+                @click="addNewSymptom" />
             </li>
           </ul>
         </div>
@@ -183,66 +173,121 @@
 
       <hr />
       <!-- ALLERGIES -->
-      <div class="row" v-if="allergy || mode === 'create'">
+      <div
+        class="row"
+        v-if="allergy || mode === 'create'">
         <div class="col-4">
           <span class="form-label">
             {{ $t('diary.allergyLabel') }}
           </span>
         </div>
         <div class="col-8">
-          <p style="text-align: left; font-size: small;" v-if="mode === 'create'">{{ $t('diary.allergyHint') }}</p>
-          <q-select v-model="allergy"
-                   v-if="mode==='create' && (availableAllergies.length > 0 || suspectedAllergies.length > 0)"
-                   :options="availableAllergies"
-                   options-dense
-                   dense
-                   :option-label="(o) => o ? o.languageDisplays[lang] : 'keine Allergie'"
-                   clearable
-          />
+          <p
+            style="text-align: left; font-size: small"
+            v-if="mode === 'create'">
+            {{ $t('diary.allergyHint') }}
+          </p>
+          <q-select
+            v-model="allergy"
+            v-if="mode === 'create' && (availableAllergies.length > 0 || suspectedAllergies.length > 0)"
+            :options="availableAllergies"
+            options-dense
+            dense
+            :option-label="(o) => (o ? o.languageDisplays[lang] : 'keine Allergie')"
+            clearable />
 
-          <q-btn v-if="mode === 'create'"
-                 @click="showSuspectedAllergiesPopup = true"
-                 :label="$t('suspectedAllergies.button')"
-                 class="add-suspected-button"
-                 flat
-                 size="sm">
+          <q-btn
+            v-if="mode === 'create'"
+            @click="showSuspectedAllergiesPopup = true"
+            :label="$t('suspectedAllergies.button')"
+            class="add-suspected-button"
+            flat
+            size="sm">
           </q-btn>
 
-          <span class="display" v-if="mode === 'display'">{{
-            allergy ? allergy.languageDisplays[lang] : ''
-          }}</span>
+          <span
+            class="display"
+            v-if="mode === 'display'"
+            >{{ allergy ? allergy.languageDisplays[lang] : '' }}</span
+          >
         </div>
       </div>
 
-    <hr v-if="allergy || (mode === 'create')"/>
+      <hr v-if="allergy || mode === 'create'" />
+      <!-- MEDICATIONS -->
+      <div
+        class="row"
+        v-if="medications.length > 0 || mode === 'create'">
+        <div class="col-4">
+          <span class="form-label">
+            {{ $t('diary.medicationsLabel') }}
+          </span>
+        </div>
+        <div class="col-8">
+          <p
+            style="text-align: left; font-size: small"
+            v-if="mode === 'create'">
+            {{ $t('diary.medicationsHint') }}
+          </p>
+          <q-select
+            v-if="mode === 'create' && preferredMedication.length > 0"
+            v-model="medications"
+            :options="preferredMedication"
+            multiple
+            options-dense
+            dense
+            use-chips
+            :option-label="medicationsOptionLabel" />
+          <ul v-if="mode === 'display'">
+            <li
+              v-for="(medication, i) in medications"
+              :key="i">
+              {{ medicationsOptionLabel(medication) }}
+            </li>
+          </ul>
+          <q-btn
+            v-if="mode === 'create'"
+            @click="showPreferredMedicationPopup = true"
+            :label="$t('preferredMedication.button')"
+            class="add-suspected-button"
+            flat
+            size="sm" />
+        </div>
+      </div>
+
+      <hr v-if="medications.length > 0 || mode === 'create'" />
       <!-- NOTE -->
-      <div class="row" v-if="mode === 'create' || (note && note.length > 0)">
+      <div
+        class="row"
+        v-if="mode === 'create' || (note && note.length > 0)">
         <div class="col-4">
           <span class="form-label">
             {{ $t('diary.noteLabel') }}
           </span>
         </div>
         <div class="col-8">
-          <p v-if="mode === 'display'" class="display-note">
+          <p
+            v-if="mode === 'display'"
+            class="display-note">
             {{ note }}
           </p>
           <textarea
             v-if="mode === 'create'"
             v-model="note"
             :placeholder="$t('diary.noteHint')"
-            class="edit-note editable"
-          >
+            class="edit-note editable">
           </textarea>
         </div>
       </div>
     </q-card-section>
     <hr v-if="mode === 'create'" />
-    <q-card-actions align="center" v-if="mode === 'create'">
+    <q-card-actions
+      align="center"
+      v-if="mode === 'create'">
       <q-btn
         :label="$t('common.save')"
         @click="saveEntry"
-        :disable="disableButton"
-      />
+        :disable="disableButton" />
     </q-card-actions>
   </q-card>
 
@@ -250,20 +295,22 @@
     <suspected-allergies-card
       :availableAllergies="allergyCodes"
       :suspectedAllergies="suspectedAllergies"
-      @close="onCloseSuspectedAllergiesPopup"
-    />
+      @close="onCloseSuspectedAllergiesPopup" />
+  </q-dialog>
+  <q-dialog v-model="showPreferredMedicationPopup">
+    <preferred-medication-card @close="onClosePreferredMedication" />
   </q-dialog>
 </template>
 
 <script lang="ts">
-import {
-  ALLERGY_IDENTIFICATION_CODES,
-  AllergySystemCodeExtension
-} from '@i4mi/mhealth-proto-components';
-import { defineComponent, PropType } from 'vue';
-import { DiaryEntry, Symptom, SymptomIntensity } from '../model/interfaces';
-import { SYMPTOM_LOCATIONS } from '../assets/symptoms';
+import {ALLERGY_IDENTIFICATION_CODES, AllergySystemCodeExtension} from '@i4mi/mhealth-proto-components';
+import {defineComponent, PropType} from 'vue';
+import {DiaryEntry, Symptom, SymptomIntensity} from '../model/interfaces';
+import {SYMPTOM_LOCATIONS} from '../assets/symptoms';
 import SuspectedAllergiesCard from './SuspectedAllergiesCard.vue';
+import {Medication, readI18N} from '@i4mi/fhir_r4';
+import {getLangStringFromLocale} from 'src/boot/i18n';
+import PreferredMedicationCard from './PreferredMedicationCard.vue';
 
 enum FormMode {
   DISPLAY = 'display',
@@ -275,7 +322,12 @@ const EMPTY_SYMPTOM = {
   location: {
     name: 'unknown',
     sct: '261665006',
-    image: 'none.json'
+    image: 'none.json',
+    defaultCoding: {
+      system: 'http://snomed.info/sct',
+      code: '261665006',
+      display: 'Unknown (qualifier value)'
+    }
   }
 };
 
@@ -284,11 +336,11 @@ const EMPTY_SYMPTOM = {
  */
 export default defineComponent({
   name: 'DiaryEntryCard',
-  components: { SuspectedAllergiesCard },
+  components: {SuspectedAllergiesCard, PreferredMedicationCard},
   data() {
     return {
       mode: this.$props.entry ? FormMode.DISPLAY : FormMode.CREATE,
-      date: new Date(),
+      date: this.$today,
       symptoms: new Array<Symptom>(),
       note: undefined as string | undefined,
       allergy: undefined as AllergySystemCodeExtension | undefined,
@@ -297,8 +349,11 @@ export default defineComponent({
       availableAllergies: new Array<AllergySystemCodeExtension>(),
       suspectedAllergies: new Array<AllergySystemCodeExtension>(),
       allergyCodes: new Array<AllergySystemCodeExtension>(),
-      lang: this.$i18n.locale.substring(0, 2),
-      showSuspectedAllergiesPopup: false
+      lang: getLangStringFromLocale(this.$i18n.locale),
+      showSuspectedAllergiesPopup: false,
+      showPreferredMedicationPopup: false,
+      medications: new Array<Medication>(),
+      preferredMedication: this.$store.getPreferredMedication()
     };
   },
   /**
@@ -335,16 +390,11 @@ export default defineComponent({
   beforeMount() {
     this.knownAllergyCodes = this.$store.getKnownAllergies().map((allergy) => {
       const sctCode = allergy.code.coding
-        ? allergy.code.coding.find(
-            (coding) => coding.system === 'http://snomed.info/sct'
-          )
+        ? allergy.code.coding.find((coding) => coding.system === 'http://snomed.info/sct')
         : undefined;
       let coding = ALLERGY_IDENTIFICATION_CODES[0];
       if (sctCode && sctCode.code) {
-        coding =
-          ALLERGY_IDENTIFICATION_CODES.find(
-            (code) => code.defaultCoding.code === sctCode.code
-          ) || coding;
+        coding = ALLERGY_IDENTIFICATION_CODES.find((code) => code.defaultCoding.code === sctCode.code) || coding;
       }
       return coding;
     });
@@ -360,8 +410,7 @@ export default defineComponent({
   computed: {
     disableButton(): boolean {
       return (
-        (this.symptoms.length === 0 ||
-          (this.symptoms.length === 1 && this.symptoms[0] === EMPTY_SYMPTOM)) &&
+        (this.symptoms.length === 0 || (this.symptoms.length === 1 && this.symptoms[0] === EMPTY_SYMPTOM)) &&
         (this.note == undefined || this.note?.length === 0) &&
         this.allergy == undefined
       );
@@ -371,34 +420,37 @@ export default defineComponent({
     saveEntry() {
       this.$emit('create-entry', {
         date: new Date(this.date),
-        symptoms: [... this.symptoms.filter(s => s.location.name !== 'unknown')],
-        note: this.note && this.note.length > 0
-          ? this.note
-          : undefined,
-        allergy: this.allergy
-          ? {... this.allergy}
-          : undefined
+        symptoms: [...this.symptoms.filter((s) => s.location.name !== 'unknown')],
+        note: this.note && this.note.length > 0 ? this.note : undefined,
+        allergy: this.allergy ? {...this.allergy} : undefined,
+        medications: [...this.medications]
       });
       this.resetForm();
       this.dashBoardMode || this.$emit('close');
     },
     resetForm(): void {
-      this.date = new Date();
+      this.date = this.$today;
       this.symptoms = [];
       this.note = '';
       this.allergy = undefined;
+      this.medications = [];
     },
-    onCloseSuspectedAllergiesPopup(event: {save: boolean, allergies: AllergySystemCodeExtension[]}): void {
+    onCloseSuspectedAllergiesPopup(event: {save: boolean; allergies: AllergySystemCodeExtension[]}): void {
       if (event.save) {
         this.suspectedAllergies = event.allergies;
         this.$store.setSuspectedAllergies(event.allergies);
         this.resetAvailableAllergies();
       }
       this.showSuspectedAllergiesPopup = false;
-
+    },
+    onClosePreferredMedication(event: {save: boolean}) {
+      if (event.save) {
+        this.preferredMedication = this.$store.getPreferredMedication();
+      }
+      this.showPreferredMedicationPopup = false;
     },
     addNewSymptom() {
-      this.symptoms.push(Object.assign({},EMPTY_SYMPTOM));
+      this.symptoms.push(Object.assign({}, EMPTY_SYMPTOM));
     },
     validateSymptom(symptom: Symptom): boolean {
       if (symptom.location === undefined || symptom.location.sct === '261665006') {
@@ -414,12 +466,14 @@ export default defineComponent({
         arr2: AllergySystemCodeExtension[]
       ): AllergySystemCodeExtension[] {
         const arr = new Array<AllergySystemCodeExtension>();
-        arr1.forEach(e1 => arr.push(e1));
+        arr1.forEach((e1) => arr.push(e1));
         // only push when not already in array
-        arr2.forEach(e2 => {
-          if (arr1.findIndex((e1: AllergySystemCodeExtension) => {
-            return e1.defaultCoding.code === e2.defaultCoding.code
-          }) === -1) {
+        arr2.forEach((e2) => {
+          if (
+            arr1.findIndex((e1: AllergySystemCodeExtension) => {
+              return e1.defaultCoding.code === e2.defaultCoding.code;
+            }) === -1
+          ) {
             arr.push(e2);
           }
         });
@@ -427,18 +481,37 @@ export default defineComponent({
       }
 
       this.availableAllergies = merge(this.knownAllergyCodes, this.suspectedAllergies)
-        .filter(a => a.defaultCoding.display && !a.defaultCoding.display.includes('No known'))
+        .filter((a) => a.defaultCoding.display && !a.defaultCoding.display.includes('No known'))
         .sort((a, b) => (a.defaultCoding.display || '').localeCompare(b.defaultCoding.display || ''));
     },
     resetAllergyCodes() {
       this.allergyCodes = ALLERGY_IDENTIFICATION_CODES.filter((allergyCode) => {
+        return (
+          !this.suspectedAllergies.includes(allergyCode) &&
+          !this.knownAllergyCodes.includes(allergyCode) &&
+          !allergyCode.defaultCoding.display?.includes('No known') &&
+          !allergyCode.defaultCoding.display?.includes('Allergy to')
+        );
+      });
+    },
+    medicationsOptionLabel(option: Medication): string {
+      let label = this.$t('common.error');
+
+      if (option.code?._text) {
+        label = readI18N(option.code._text, this.lang) ?? label;
+      } else if (option.code?.text) {
+        label = option.code.text ?? label;
+      }
+
+      return label;
+    },
+    dateSelectorOptions(date: string) {
       return (
-        !this.suspectedAllergies.includes(allergyCode) &&
-        !this.knownAllergyCodes.includes(allergyCode) &&
-        !allergyCode.defaultCoding.display?.includes('No known') &&
-        !allergyCode.defaultCoding.display?.includes('Allergy to')
-      )
-    });
+        date <=
+        `${this.$today.getFullYear()}/${`0${this.$today.getMonth() + 1}`.slice(-2)}/${`0${this.$today.getDate()}`.slice(
+          -2
+        )}`
+      );
     }
   },
   watch: {}
@@ -551,7 +624,7 @@ hr {
   opacity: 0.5;
 }
 .add-suspected-button {
-  margin: 1em 1em 0
+  margin: 1em 1em 0;
 }
 p {
   text-align: unset;

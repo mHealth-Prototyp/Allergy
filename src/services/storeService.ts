@@ -1,18 +1,12 @@
-import { AllergyIntoleranceSeverity, Patient, Reference } from '@i4mi/fhir_r4';
+import {AllergyIntoleranceSeverity, Patient, Reference, Medication} from '@i4mi/fhir_r4';
 import {
   AllergyIntoleranceEpisodeParams,
   AllergySystemCodeExtension,
   CHAllergyIntolerance,
   FhirUtils
 } from '@i4mi/mhealth-proto-components';
-import { APP_LANGUAGES } from 'src/boot/i18n';
-import {
-  DashboardComponent,
-  DiaryEntry,
-  LoginType,
-  Settings,
-  SymptomIntensity
-} from 'src/model/interfaces';
+import {APP_LANGUAGES} from 'src/boot/i18n';
+import {DashboardComponent, DiaryEntry, LoginType, Settings, Station, SymptomIntensity, UserData} from 'src/model/interfaces';
 
 /**
  * storeService.ts
@@ -23,12 +17,6 @@ import {
 const STORAGE_KEY = 'EPD_USE_CASES_PT2';
 const USER_DATA_KEY = 'EPD_USE_CASES_PT2_USER_DATA';
 
-export interface UserData {
-  user: string;
-  diaryEntries: DiaryEntry[];
-  suspectedAllergies: AllergySystemCodeExtension[];
-  settings: Settings;
-}
 interface LocalStoreObject {
   patient: Patient;
   oids: Oids;
@@ -50,12 +38,13 @@ export interface Oids {
 export default class Store {
   private fhirUtils: FhirUtils;
   private user: LoginType | undefined;
-  private patient: Patient = {};
+  private patient: Patient = {resourceType: 'Patient'};
   private settings = this.getDefaultSettings();
   private oids = this.getDefaultOids();
   private diaryEntries = new Array<DiaryEntry>();
   private knownAllergies = new Array<CHAllergyIntolerance>();
   private suspectedAllergies = new Array<AllergySystemCodeExtension>();
+  private preferredMedication = new Array<Medication>();
 
   constructor(_fhirUtils: FhirUtils) {
     this.fhirUtils = _fhirUtils;
@@ -85,19 +74,19 @@ export default class Store {
     const local = localStorage.getItem(USER_DATA_KEY);
     if (local) {
       const usersData = JSON.parse(local) as UserData[];
-      const userData = usersData.find(
-        (data) => data.user === this.user?.username
-      );
+      const userData = usersData.find((data) => data.user === this.user?.username);
       this.diaryEntries =
         userData?.diaryEntries.map((e) => {
           return {
             date: new Date(e.date),
             symptoms: e.symptoms,
             note: e.note,
-            allergy: e.allergy
+            allergy: e.allergy,
+            medications: e.medications
           };
         }) ?? [];
       this.suspectedAllergies = userData?.suspectedAllergies ?? [];
+      this.preferredMedication = userData?.preferredMedication ?? [];
       this.settings = userData?.settings ?? this.getDefaultSettings();
     }
   }
@@ -109,20 +98,17 @@ export default class Store {
     if (!this.user || !this.user.username) {
       throw new Error("Can't store without user");
     }
-    const userData = JSON.parse(
-      localStorage.getItem(USER_DATA_KEY) ?? '[]'
-    ) as UserData[];
+    const userData = JSON.parse(localStorage.getItem(USER_DATA_KEY) ?? '[]') as UserData[];
 
     const localData: UserData = {
       user: this.user.username || '',
       diaryEntries: this.diaryEntries,
       suspectedAllergies: this.suspectedAllergies,
+      preferredMedication: this.preferredMedication,
       settings: this.settings
     };
 
-    const index = userData.findIndex(
-      (data) => data.user === this.user?.username ?? ''
-    );
+    const index = userData.findIndex((data) => data.user === this.user?.username ?? '');
 
     if (index === -1) {
       userData.push(localData);
@@ -223,9 +209,7 @@ export default class Store {
     if (_onlyRealAllergies && this.knownAllergies.length > 1) {
       return this.knownAllergies.filter(
         (a: CHAllergyIntolerance) =>
-          a.code.coding &&
-          a.code.coding[0] &&
-          !a.code.coding[0].display?.includes('No known')
+          a.code.coding && a.code.coding[0] && !a.code.coding[0].display?.includes('No known')
       );
     }
     return this.knownAllergies;
@@ -248,9 +232,7 @@ export default class Store {
    * @returns        the new array of known allergies
    */
 
-  addOrUpdateKnownAllergy(
-    _allergy: CHAllergyIntolerance
-  ): CHAllergyIntolerance[] {
+  addOrUpdateKnownAllergy(_allergy: CHAllergyIntolerance): CHAllergyIntolerance[] {
     const index = this.knownAllergies.findIndex((a) => a.id === _allergy.id);
     if (index === -1) {
       this.knownAllergies.push(_allergy);
@@ -281,21 +263,13 @@ export default class Store {
    * @param _allergy the allergy to add
    * @returns        the new array of suspected allergies
    */
-  addSuspectedAllergy(
-    _allergy: AllergySystemCodeExtension
-  ): AllergySystemCodeExtension[] {
-    const index = this.suspectedAllergies.findIndex(
-      (sa) => sa.defaultCoding.code === _allergy.defaultCoding.code
-    );
+  addSuspectedAllergy(_allergy: AllergySystemCodeExtension): AllergySystemCodeExtension[] {
+    const index = this.suspectedAllergies.findIndex((sa) => sa.defaultCoding.code === _allergy.defaultCoding.code);
     const known =
       this.knownAllergies.findIndex((ka: CHAllergyIntolerance) => {
         if (ka.code.coding) {
-          const knownCoding = ka.code.coding.find(
-            (coding) => coding.system === _allergy.defaultCoding.system
-          );
-          return (
-            knownCoding && knownCoding.code === _allergy.defaultCoding.code
-          );
+          const knownCoding = ka.code.coding.find((coding) => coding.system === _allergy.defaultCoding.system);
+          return knownCoding && knownCoding.code === _allergy.defaultCoding.code;
         } else {
           return false;
         }
@@ -320,12 +294,29 @@ export default class Store {
    * @param _allergies  an array of suspected allergies.
    * @returns           the new array of suspected allergies
    */
-  setSuspectedAllergies(
-    _allergies: AllergySystemCodeExtension[]
-  ): AllergySystemCodeExtension[] {
+  setSuspectedAllergies(_allergies: AllergySystemCodeExtension[]): AllergySystemCodeExtension[] {
     this.suspectedAllergies = _allergies;
     this.persistToStorage();
     return this.getSuspectedAllergies();
+  }
+
+  /**
+   * Returns the preferred medication.
+   * @returns        an array of medication
+   */
+  getPreferredMedication(): Medication[] {
+    return this.preferredMedication;
+  }
+
+  /**
+   * Sets the preferred medication property.
+   * @param _allergies  an array of medication.
+   * @returns           the new array of medication
+   */
+  setPreferredMedication(_medication: Medication[]) {
+    this.preferredMedication = _medication;
+    this.persistToStorage();
+    return this.getPreferredMedication();
   }
 
   /**
@@ -334,12 +325,8 @@ export default class Store {
    * @returns        an array of suspected allergies as CHAllergyIntolerance
    *                 resources
    */
-  removeSuspectedAllergy(
-    _allergy: AllergySystemCodeExtension
-  ): AllergySystemCodeExtension[] {
-    const index = this.suspectedAllergies.findIndex(
-      (sa) => sa.defaultCoding.code === _allergy.defaultCoding.code
-    );
+  removeSuspectedAllergy(_allergy: AllergySystemCodeExtension): AllergySystemCodeExtension[] {
+    const index = this.suspectedAllergies.findIndex((sa) => sa.defaultCoding.code === _allergy.defaultCoding.code);
     if (index > -1) {
       this.suspectedAllergies.splice(index, 1);
     }
@@ -352,22 +339,12 @@ export default class Store {
    * CH AllergyIntolerance profile.
    * @returns        the new array of suspected allergies
    */
-  getSuspectedAllergiesAsFhir(
-    _translate?: (str: string) => string
-  ): CHAllergyIntolerance[] {
+  getSuspectedAllergiesAsFhir(_translate?: (str: string) => string): CHAllergyIntolerance[] {
     return this.getSuspectedAllergies().map((suspectedAllergy) => {
       const diaryEntries = this.diaryEntries.filter((diaryEntry) => {
-        return (
-          diaryEntry.allergy &&
-          diaryEntry.allergy.defaultCoding.code ===
-            suspectedAllergy.defaultCoding.code
-        );
+        return diaryEntry.allergy && diaryEntry.allergy.defaultCoding.code === suspectedAllergy.defaultCoding.code;
       });
-      return this.convertAllergyToFhir(
-        suspectedAllergy,
-        diaryEntries,
-        _translate
-      );
+      return this.convertAllergyToFhir(suspectedAllergy, diaryEntries, _translate);
     });
   }
 
@@ -385,16 +362,13 @@ export default class Store {
   ): CHAllergyIntolerance {
     const userReference: Reference = {
       type: 'Patient',
-      display: this.user
-        ? this.user.givenName + ' ' + this.user.familyName
-        : undefined
+      display: this.user ? this.user.givenName + ' ' + this.user.familyName : undefined
     };
     const allergyParams = {
       clinicalStatus: {
         coding: [
           {
-            system:
-              'http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical',
+            system: 'http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical',
             code: 'active',
             display: 'Active'
           }
@@ -403,8 +377,7 @@ export default class Store {
       verificationStatus: {
         coding: [
           {
-            system:
-              'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification',
+            system: 'http://terminology.hl7.org/CodeSystem/allergyintolerance-verification',
             code: 'unconfirmed',
             display: 'Unconfirmed'
           }
@@ -414,16 +387,10 @@ export default class Store {
         coding: [_allergy.defaultCoding]
       },
       patient: this.patient,
-      onsetDateTime:
-        _diaryEntries.length > 0
-          ? _diaryEntries[0].date.toISOString()
-          : undefined,
+      onsetDateTime: _diaryEntries.length > 0 ? _diaryEntries[0].date.toISOString() : undefined,
       recorder: userReference,
       asserter: userReference,
-      lastOccurrence:
-        _diaryEntries.length > 0
-          ? _diaryEntries[_diaryEntries.length - 1].date.toISOString()
-          : undefined
+      lastOccurrence: _diaryEntries.length > 0 ? _diaryEntries[_diaryEntries.length - 1].date.toISOString() : undefined
     };
 
     const episodes = new Array<AllergyIntoleranceEpisodeParams>();
@@ -444,6 +411,9 @@ export default class Store {
         }
         episodes.push({
           description: entry.note,
+          substance: {
+            coding: [entry.allergy?.defaultCoding]
+          },
           manifestation: [
             {
               coding: [
@@ -462,9 +432,7 @@ export default class Store {
               {
                 system: 'http://snomed.info/sct',
                 code: symptom.location.sct,
-                display: _translate
-                  ? _translate(symptom.location.name)
-                  : symptom.location.name
+                display: _translate ? _translate(symptom.location.name) : symptom.location.name
               }
             ]
           }
@@ -501,7 +469,7 @@ export default class Store {
       language: APP_LANGUAGES.DE,
       organization: {
         resourceType: 'Organization',
-        id: '1',
+        id: '5137cb52-e91c-4002-bc28-24b12e61e035',
         identifier: [
           {
             system: 'urn:oid:2.16.756.5.30.1.178.1.1',
@@ -533,9 +501,13 @@ export default class Store {
         DashboardComponent.DIARY_LIST,
         DashboardComponent.NEW_DIARY_ENTRY,
         DashboardComponent.CALENDAR,
-        DashboardComponent.ALLERGIES
+        DashboardComponent.ALLERGIES,
+        DashboardComponent.POLLEN_MAP,
+        DashboardComponent.AIR_QUALITY
       ],
-      daysDisplayedOnDashboard: 7
+      daysDisplayedOnDashboard: 7,
+      station: undefined,
+      pollen: undefined
     };
   }
 
@@ -560,34 +532,22 @@ export default class Store {
    */
   setOids(_oids: Oids): void {
     if (!_oids.ahv.includes('urn:oid'))
-      throw new Error(
-        'Provided AHV OID is not a valid OID, must start with urn:oid. (Provided: ' +
-          _oids.ahv +
-          ').'
-      );
+      throw new Error('Provided AHV OID is not a valid OID, must start with urn:oid. (Provided: ' + _oids.ahv + ').');
     if (!_oids.eprSpid.includes('urn:oid'))
       throw new Error(
-        'Provided EPR SPID OID is not a valid OID, must start with urn:oid. (Provided: ' +
-          _oids.eprSpid +
-          ').'
+        'Provided EPR SPID OID is not a valid OID, must start with urn:oid. (Provided: ' + _oids.eprSpid + ').'
       );
     if (!_oids.mpiId.includes('urn:oid'))
       throw new Error(
-        'Provided MPI ID OID is not a valid OID, must start with urn:oid. (Provided: ' +
-          _oids.mpiId +
-          ').'
+        'Provided MPI ID OID is not a valid OID, must start with urn:oid. (Provided: ' + _oids.mpiId + ').'
       );
     if (!_oids.local.includes('urn:oid'))
       throw new Error(
-        'Provided local system OID is not a valid OID, must start with urn:oid. (Provided: ' +
-          _oids.local +
-          ').'
+        'Provided local system OID is not a valid OID, must start with urn:oid. (Provided: ' + _oids.local + ').'
       );
     if (!_oids.app.includes('urn:oid'))
       throw new Error(
-        'Provided app system OID is not a valid OID, must start with urn:oid. (Provided: ' +
-          _oids.app +
-          ').'
+        'Provided app system OID is not a valid OID, must start with urn:oid. (Provided: ' + _oids.app + ').'
       );
 
     this.oids = _oids;
@@ -639,7 +599,7 @@ export default class Store {
    */
   clearAll(): void {
     this.user = undefined;
-    this.patient = {};
+    this.patient = {resourceType: 'Patient'};
     this.oids = this.getDefaultOids();
     this.diaryEntries = [];
     this.knownAllergies = [];
@@ -653,7 +613,7 @@ export default class Store {
    * Returns the current dashboard settings
    * @returns An array of objects with component name and setting.
    */
-  getDashboardSettings(): { component: DashboardComponent; active: boolean }[] {
+  getDashboardSettings(): {component: DashboardComponent; active: boolean}[] {
     return Object.values(DashboardComponent).map((component) => {
       return {
         component: component as DashboardComponent,
@@ -694,6 +654,40 @@ export default class Store {
    */
   setDaysDisplayedOnDashboard(value: number): void {
     this.settings.daysDisplayedOnDashboard = value;
+    this.persistToStorage();
+  }
+
+  /**
+   * Returns the selected station.
+   * @returns the station for which the weather data will be shown.
+   */
+  getStation(): Station | undefined {
+    return this.settings.station;
+  }
+
+  /**
+   * Sets the selected station.
+   * @param value the station for which the weather data will be shown.
+   */
+  setStation(value: Station): void {
+    this.settings.station = value;
+    this.persistToStorage();
+  }
+
+  /**
+   * Returns the selected pollen.
+   * @returns the pollen for which the weather data will be shown.
+   */
+  getPollen(): AllergySystemCodeExtension | undefined {
+    return this.settings.pollen;
+  }
+
+  /**
+   * Sets the selected pollen.
+   * @param value the pollen for which the weather data will be shown.
+   */
+  setPollen(value: AllergySystemCodeExtension): void {
+    this.settings.pollen = value;
     this.persistToStorage();
   }
 

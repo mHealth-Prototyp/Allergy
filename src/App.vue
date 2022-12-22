@@ -5,34 +5,29 @@
     :acceptedLogins="logins"
     :onLogin="login"
     @message="displayMessage"
-    :processing="processingLogin"
-  />
+    disable2FA
+    :processing="processingLogin" />
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { Notify } from 'quasar';
+import {defineComponent} from 'vue';
+import {Notify} from 'quasar';
 import LoginMock from './components/LoginMock.vue';
-import { LoginType, UIMessage, UIMessageType } from './model/interfaces';
+import {LoginType, UIMessage, UIMessageType} from './model/interfaces';
 import ACCEPTED_LOGINS from './assets/acceptedLogins.json';
-import { DocumentReferenceStatus } from '@i4mi/fhir_r4';
-import { CHAllergyIntolerance } from '@i4mi/mhealth-proto-components';
+import {DocumentReferenceStatus} from '@i4mi/fhir_r4';
+import {CHAllergyIntolerance} from '@i4mi/mhealth-proto-components';
 
 const toasts = new Array<() => void>();
 
 export default defineComponent({
   name: 'App',
-  components: { LoginMock },
+  components: {LoginMock},
   data() {
     return {
       isLoggedIn: false,
       processingLogin: false,
       logins: ACCEPTED_LOGINS as LoginType[]
     };
-  },
-  beforeMount() {
-    if (this.$root) {
-      this.$root.$i18n.locale = this.$store.getLanguage();
-    }
   },
   mounted() {
     this.isLoggedIn = this.$store.getUser() !== undefined;
@@ -66,11 +61,7 @@ export default defineComponent({
                 text: this.$t('index.loginError')
               });
               console.warn(
-                'No corresponding patient found on EPD Playground for ' +
-                  user.givenName +
-                  ' ' +
-                  user.familyName +
-                  '.'
+                'No corresponding patient found on EPD Playground for ' + user.givenName + ' ' + user.familyName + '.'
               );
             } else {
               this.$store.setUser(user);
@@ -97,15 +88,12 @@ export default defineComponent({
       const pat = this.$store.getPatient();
       return new Promise((resolve, reject) => {
         if (pat.identifier) {
-          const mpiIdentifier = pat.identifier.find(
-            (i) => i.system === this.$epdUtils.getOids().mpiId
-          );
+          const mpiIdentifier = pat.identifier.find((i) => i.system === this.$epdUtils.getOids().mpiId);
           if (mpiIdentifier && mpiIdentifier.system && mpiIdentifier.value) {
             this.$epdUtils
               .useITI67({
                 status: DocumentReferenceStatus.CURRENT,
-                'patient.identifier':
-                  mpiIdentifier.system + '|' + mpiIdentifier.value,
+                'patient.identifier': mpiIdentifier.system + '|' + mpiIdentifier.value,
                 type: 'http://snomed.info/sct|722446000'
               })
               .then((documentList) => {
@@ -120,9 +108,7 @@ export default defineComponent({
                         );
                         return undefined;
                       }
-                      const allergyIntolerance = JSON.parse(
-                        ai
-                      ) as CHAllergyIntolerance;
+                      const allergyIntolerance = JSON.parse(ai) as CHAllergyIntolerance;
 
                       // filter out old / broken resources
                       if (
@@ -137,21 +123,15 @@ export default defineComponent({
                     })
                     .catch((e) => {
                       console.log(e, document);
-                      return reject(
-                        'Something went wrong fetching a document, see console.'
-                      );
+                      return reject('Something went wrong fetching a document, see console.');
                     });
                 });
 
                 Promise.all(allergyPromises)
                   .then((allergyIntolerances) => {
                     // filter out undefined entries (from unparsed XML files)
-                    allergyIntolerances = allergyIntolerances.filter(
-                      (ai) => ai !== undefined
-                    );
-                    this.$store.setKnownAllergies(
-                      allergyIntolerances as CHAllergyIntolerance[]
-                    );
+                    allergyIntolerances = allergyIntolerances.filter((ai) => ai !== undefined);
+                    this.$store.setKnownAllergies(allergyIntolerances as CHAllergyIntolerance[]);
                     return resolve();
                   })
                   .catch((e) => {
@@ -160,19 +140,12 @@ export default defineComponent({
                       documentList,
                       e
                     );
-                    return reject(
-                      'Something went wrong fetching the AllergyIntolerance resources, see console.'
-                    );
+                    return reject('Something went wrong fetching the AllergyIntolerance resources, see console.');
                   });
               })
               .catch((e) => {
-                console.log(
-                  'Something went wrong fetching the known allergies',
-                  e
-                );
-                return reject(
-                  'Something went wrong fetching the known allergies, see console.'
-                );
+                console.log('Something went wrong fetching the known allergies', e);
+                return reject('Something went wrong fetching the known allergies, see console.');
               });
           } else {
             return reject('Current patient has no correct identifier.');
