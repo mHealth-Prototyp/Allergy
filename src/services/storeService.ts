@@ -7,6 +7,7 @@ import {
 } from '@i4mi/mhealth-proto-components';
 import {APP_LANGUAGES} from 'src/boot/i18n';
 import {DashboardComponent, DiaryEntry, LoginType, Settings, Station, SymptomIntensity, UserData} from 'src/model/interfaces';
+import {ENV} from '../assets/env.js';
 
 /**
  * storeService.ts
@@ -561,11 +562,11 @@ export default class Store {
    */
   getDefaultOids(): Oids {
     return {
-      eprSpid: 'urn:oid:2.16.756.5.30.1.127.3.10.3',
-      mpiId: 'urn:oid:1.1.1.99.1',
-      local: 'urn:oid:2.16.756.5.30.1.178.1.1',
-      ahv: 'urn:oid:2.16.756.5.32',
-      app: 'urn:oid:1.3.6.1.4.1.12559.11.13.2.5'
+      eprSpid: ENV.EPR_SPID,
+      mpiId: ENV.MPI_ID,
+      local: ENV.LOCAL,
+      ahv: ENV.AHV,
+      app: ENV.APP
     };
   }
 

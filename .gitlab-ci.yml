@@ -1,32 +1,13 @@
-image: node:16
-
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 stages:
-  - lint
-  - deploy
-
-dev_lint:
-  stage: lint
-  only:
-    - develop
-  script:
-    - ls
-    - npm i --progress=false
-    - npm run lint
-
-pages: # the job must be named pages
-  stage: deploy
-  script:
-    - npm ci
-    - npm run build
-    - cp -r dist/spa/* dist # copy content of spa to higher hirarchy folder
-    - rm -r dist/spa # remove spa folder
-    - mv public public-vue # GitLab Pages hooks on the public folder
-    - mv dist public # rename the dist folder (result of npm run build)
-    # optionally, you can activate gzip support with the following line:
-    - find public -type f -regex '.*\.\(htm\|html\|txt\|text\|js\|css\)$' -exec gzip -f -k {} \;
-    - cp public/index.html public/404.html
-  artifacts:
-    paths:
-      - public # artifact path must be /public for GitLab Pages to pick it up
-  only:
-    - main
+- test
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml

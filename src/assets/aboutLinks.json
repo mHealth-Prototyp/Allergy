@@ -24,7 +24,14 @@
     "url": "https://www.patientendossier.ch/de",
     "label": {
       "de-CH": "Eidgenössisches Patientendossier EPD",
-      "fr-CH": "Dossier éléctronique du patient DEP "
+      "fr-CH": "Dossier éléctronique du patient DEP"
+    }
+  },
+  {
+    "url": "https://github.com/mHealth-Prototyp/Allergy/blob/main/LICENSE",
+    "label": {
+      "de-CH": "MIT Lizenz",
+      "fr-CH": "Licence MIT"
     }
   }
 ]
