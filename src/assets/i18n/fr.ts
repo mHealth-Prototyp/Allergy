@@ -41,7 +41,7 @@ export default {
   about: {
     title: 'À propos du prototype mHealth (scénario allergies)',
     aboutText:
-      "Le prototype mHealth (scénario allergies) a été créé dans le cadre d'un projet d'eHealth Suisse et de l'Institut d'informatique médicale I4MI de la Haute école spécialisée bernoise. Il doit servir de démonstrateur pour un cas d'utilisation d'allergies centré sur le patient avec le EPD Playground.",
+      "Le prototype mHealth (scénario allergies) a été créé dans le cadre d'un projet d'eHealth Suisse et de l'Institut d'informatique médicale I4MI de la Haute école spécialisée bernoise. Il doit servir de démonstrateur pour un cas d'utilisation d'allergies centré sur le patient avec le EPD Playground. Le logiciel est publié sous la licence du MIT.",
     readMore:
       "Les liens suivants vous permettront d'en savoir plus sur les partenaires du projet, sur le dossier électronique du patient et sur l'EPD Playground :",
     version: 'version:'

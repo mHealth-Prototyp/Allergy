@@ -11,7 +11,13 @@ import WarningBanner from 'src/components/banners/WarningBanner.vue';
 import InformationBanner from 'src/components/banners/InformationBanner.vue';
 import WeatherAPIConsumer from 'src/services/weatherAPIConsumer';
 
-const fhirUtils = new FhirUtils(ENV.BASE_URL);
+const fhirUtils = new FhirUtils(ENV.BASE_URL, {
+  eprSpid: ENV.EPR_SPID,
+  mpiId: ENV.MPI_ID,
+  local: ENV.LOCAL,
+  ahv: ENV.AHV,
+  app: ENV.APP
+});
 const store = new Store(fhirUtils);
 const epdUtils = new EpdPlaygroundUtils(ENV, store.getOids());
 const chartLocales: ApexLocale[] = [DE, FR];
