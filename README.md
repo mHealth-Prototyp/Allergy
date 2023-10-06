@@ -134,7 +134,7 @@ npm run build
 
 Go to the issue site of the repository to submit an issue: [on github.com](https://github.com/mHealth-Prototyp/Allergy/issues).
 
-# 5 License
+## 5 License
 
 This software is published under the [MIT License](LICENSE).
 
