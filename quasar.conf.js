@@ -54,7 +54,7 @@ module.exports = configure(function (ctx) {
       // transpile: false,
       publicPath:
         process.env.NODE_ENV === 'production'
-          ? '/patient-prototyp/' // necessary if you serve app on GitLab pages, corresponds to repository name
+          ? '/Allergy/' // necessary if you serve app on GitLab pages, corresponds to repository name
           : '/',
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
